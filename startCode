@@ -20,22 +20,21 @@ pygame.display.set_caption("Billard")
 
 # Klasse für die Kugel
 class Ball:
-    def __init__(self, x, y, color, radius, vel_x=0, vel_y=0):
+    def __init__(self, x, y, color, radius):
         self.x = x
         self.y = y
         self.color = color
         self.radius = radius
-        self.vel_x = vel_x
-        self.vel_y = vel_y
+        self.vel_x = 0
+        self.vel_y = 0
         self.visible = True
-        self.stopped = False
 
     def draw(self):
         if self.visible:
             pygame.draw.circle(window, self.color, (self.x, self.y), self.radius)
 
     def move(self):
-        if self.visible and not self.stopped:
+        if self.visible:
             self.x += self.vel_x
             self.y += self.vel_y
 
@@ -48,7 +47,6 @@ class Ball:
     def stop(self):
         self.vel_x = 0
         self.vel_y = 0
-        self.stopped = True
 
 # Klasse für den Queue
 class Cue:
@@ -247,7 +245,6 @@ def reset_game():
     white_ball.vel_x = 0
     white_ball.vel_y = 0
     white_ball.visible = True
-    white_ball.stopped = False
 
     red_ball.x = WINDOW_WIDTH * 3 // 4
     red_ball.y = WINDOW_HEIGHT // 3
