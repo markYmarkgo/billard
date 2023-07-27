@@ -1,36 +1,89 @@
 import pygame
-from Ball import Ball
-from Cue import Cue
-from Pocket import Pocket
-from Table import Table
+import math
 
-# Maße des Spielfelds
+# Bildschirmabmessungen
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
-TABLE_WIDTH = 700
-TABLE_HEIGHT = 400
 
 # Farben
+GREEN = (0, 128, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 
+# Taschenpositionen
+POCKET_POSITIONS = [(30, 30), (WINDOW_WIDTH // 2, 30), (WINDOW_WIDTH - 30, 30),
+                    (30, WINDOW_HEIGHT - 30), (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 30), (WINDOW_WIDTH - 30, WINDOW_HEIGHT - 30)]
+
+# Kugelradius
+BALL_RADIUS = 20
+
+# Klasse für den Tisch
+class Table:
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, GREEN, pygame.Rect(self.x, self.y, self.width, self.height), 0)
+
+# Klasse für die Taschen
+class Pocket:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.radius = 30
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, BLACK, (self.x, self.y), self.radius)
+
+# Klasse für die Kugeln
+class Ball:
+    def __init__(self, x, y, color, radius):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.radius = radius
+        self.vel_x = 0
+        self.vel_y = 0
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+
+    def update(self, table):
+        # Kugelbewegung hier implementieren (falls gewünscht)
+        pass
+
+# Klasse für das Queue
+class Cue:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.length = 200
+
+    def follow_mouse(self, mouse_x, mouse_y):
+        # Ausrichtung des Queues zur Mausposition berechnen
+        angle = math.atan2(mouse_y - self.y, mouse_x - self.x)
+        self.angle = angle
+
+    def draw(self, screen, ball_x, ball_y):
+        pygame.draw.line(screen, WHITE, (self.x, self.y), (ball_x, ball_y), 5)
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption('Billard')
+    pygame.display.set_caption("Billard")
 
-    table = Table((WINDOW_WIDTH - TABLE_WIDTH) // 2, (WINDOW_HEIGHT - TABLE_HEIGHT) // 2, TABLE_WIDTH, TABLE_HEIGHT)
+    table = Table(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+    pockets = [Pocket(x, y) for x, y in POCKET_POSITIONS]
 
-    white_ball = Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)
+    white_ball = Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, BALL_RADIUS)
+    red_ball = Ball(3 * WINDOW_WIDTH // 4, WINDOW_HEIGHT // 3, RED, BALL_RADIUS)
+    black_ball = Ball(3 * WINDOW_WIDTH // 4, 2 * WINDOW_HEIGHT // 3, BLACK, BALL_RADIUS)
+
     cue = Cue(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2)
-
-    balls = []
-    balls.append(white_ball)
-    balls.append(Ball(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, RED, 20))
-    balls.append(Ball(WINDOW_WIDTH // 2 + 50, WINDOW_HEIGHT // 2, (0, 0, 0), 20))
-
-    clock = pygame.time.Clock()
 
     running = True
     while running:
@@ -38,21 +91,23 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        cue.follow_mouse(white_ball.x, white_ball.y, *pygame.mouse.get_pos())
-        white_ball.check_table_collision(table)
-        white_ball.update()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_q]:
+            running = False
 
-        screen.fill(BLACK)  # Hintergrund schwarz füllen
-
-        table.draw(screen)
-
-        for ball in balls:
-            ball.draw(screen)
-
+        white_ball.update(table)
+        cue.follow_mouse(*pygame.mouse.get_pos())
         cue.draw(screen, white_ball.x, white_ball.y)
 
+        screen.fill(GREEN)
+        table.draw(screen)
+        for pocket in pockets:
+            pocket.draw(screen)
+        white_ball.draw(screen)
+        red_ball.draw(screen)
+        black_ball.draw(screen)
+
         pygame.display.flip()
-        clock.tick(60)
 
     pygame.quit()
 
