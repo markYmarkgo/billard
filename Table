@@ -1,7 +1,7 @@
 import pygame
 
-TABLE_COLOR = (0, 128, 0)
-POCKET_COLOR = (0, 0, 0)
+# Farben
+GREEN = (0, 128, 0)
 
 class Table:
     def __init__(self, left, top, width, height):
@@ -11,18 +11,4 @@ class Table:
         self.height = height
 
     def draw(self, screen):
-        pygame.draw.rect(screen, TABLE_COLOR, (self.left, self.top, self.width, self.height))
-
-        # Draw pockets
-        pocket_radius = 20
-        pocket_positions = [
-            (self.left + pocket_radius, self.top + pocket_radius),
-            (self.left + self.width // 2, self.top),
-            (self.left + self.width - pocket_radius, self.top + pocket_radius),
-            (self.left + pocket_radius, self.top + self.height - pocket_radius),
-            (self.left + self.width // 2, self.top + self.height),
-            (self.left + self.width - pocket_radius, self.top + self.height - pocket_radius)
-        ]
-
-        for pocket_x, pocket_y in pocket_positions:
-            pygame.draw.circle(screen, POCKET_COLOR, (pocket_x, pocket_y), pocket_radius)
+        pygame.draw.rect(screen, GREEN, (self.left, self.top, self.width, self.height))
