@@ -1,22 +1,19 @@
 import pygame
 import math
 
-WHITE = (255, 255, 255)
-CUE_LENGTH = 200
-
 class Cue:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.angle = 0
-        self.length = CUE_LENGTH
+        self.length = 100
 
     def follow_mouse(self, ball_x, ball_y, mouse_x, mouse_y):
-        self.angle = math.atan2(ball_y - mouse_y, ball_x - mouse_x)
-        self.length = min(math.hypot(ball_x - mouse_x, ball_y - mouse_y), CUE_LENGTH)
+        self.angle = math.atan2(ball_y - self.y, ball_x - self.x)
+        self.x = ball_x + 50 * math.cos(self.angle)
+        self.y = ball_y + 50 * math.sin(self.angle)
+
+    def adjust_length(self, distance):
+        self.length = min(distance, 100)
 
     def draw(self, screen, ball_x, ball_y):
-        end_x = self.x - self.length * math.cos(self.angle)
-        end_y = self.y - self.length * math.sin(self.angle)
-
-        pygame.draw.line(screen, WHITE, (ball_x, ball_y), (end_x, end_y), 3)
+        pygame.draw.line(screen, (255, 255, 255), (ball_x, ball_y), (ball_x + self.length * math.cos(self.angle), ball_y + self.length * math.sin(self.angle)), 5)
