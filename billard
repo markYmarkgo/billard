@@ -1,0 +1,51 @@
+import pygame
+from Ball import Ball
+from Cue import Cue
+from Pocket import Pocket
+from Table import Table
+
+# Maße des Spielfelds
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+TABLE_WIDTH = 700
+TABLE_HEIGHT = 400
+
+# Farben
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+BLACK = (0, 0, 0)
+
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    pygame.display.set_caption('Billard')
+
+    table = Table((WINDOW_WIDTH - TABLE_WIDTH) // 2, (WINDOW_HEIGHT - TABLE_HEIGHT) // 2, TABLE_WIDTH, TABLE_HEIGHT)
+
+    white_ball = Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)
+    cue = Cue(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2)
+
+    clock = pygame.time.Clock()
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        cue.follow_mouse(white_ball.x, white_ball.y, *pygame.mouse.get_pos())
+        white_ball.check_table_collision(table)
+        white_ball.update()
+
+        screen.fill(BLACK)
+        table.draw(screen)
+        white_ball.draw(screen)
+        cue.draw(screen, white_ball.x, white_ball.y)
+        pygame.display.flip()
+
+        clock.tick(60)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
