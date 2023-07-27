@@ -25,6 +25,11 @@ def main():
     white_ball = Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)
     cue = Cue(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2)
 
+    balls = []
+    balls.append(white_ball)
+    balls.append(Ball(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, RED, 20))
+    balls.append(Ball(WINDOW_WIDTH // 2 + 50, WINDOW_HEIGHT // 2, (0, 0, 0), 20))
+
     clock = pygame.time.Clock()
 
     running = True
@@ -37,12 +42,16 @@ def main():
         white_ball.check_table_collision(table)
         white_ball.update()
 
-        screen.fill(BLACK)
-        table.draw(screen)
-        white_ball.draw(screen)
-        cue.draw(screen, white_ball.x, white_ball.y)
-        pygame.display.flip()
+        screen.fill(BLACK)  # Hintergrund schwarz füllen
 
+        table.draw(screen)
+
+        for ball in balls:
+            ball.draw(screen)
+
+        cue.draw(screen, white_ball.x, white_ball.y)
+
+        pygame.display.flip()
         clock.tick(60)
 
     pygame.quit()
