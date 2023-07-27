@@ -1,8 +1,5 @@
 import pygame
 
-# Farben
-GREEN = (0, 128, 0)
-
 class Table:
     def __init__(self, left, top, width, height):
         self.left = left
@@ -11,4 +8,4 @@ class Table:
         self.height = height
 
     def draw(self, screen):
-        pygame.draw.rect(screen, GREEN, (self.left, self.top, self.width, self.height))
+        pygame.draw.rect(screen, (0, 128, 0), (self.left, self.top, self.width, self.height))
