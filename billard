@@ -4,7 +4,7 @@ import math
 from Ball import Ball
 from Cue import Cue
 from Pocket import Pocket
-
+from funky import reset_game, check_pocket_collision
 
 pygame.init()
 
@@ -23,28 +23,6 @@ YELLOW = (255, 255, 0)
 window = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Billard")
 
-def reset_game(white_ball, red_ball, black_ball, cue):
-    white_ball.x = WINDOW_WIDTH // 4
-    white_ball.y = WINDOW_HEIGHT // 2
-    white_ball.vel_x = 0
-    white_ball.vel_y = 0
-    white_ball.visible = True
-
-    red_ball.x = WINDOW_WIDTH * 3 // 4
-    red_ball.y = WINDOW_HEIGHT // 3
-    red_ball.vel_x = 0
-    red_ball.vel_y = 0
-    red_ball.visible = True
-
-    black_ball.x = WINDOW_WIDTH * 3 // 4
-    black_ball.y = WINDOW_HEIGHT * 2 // 3
-    black_ball.vel_x = 0
-    black_ball.vel_y = 0
-    black_ball.visible = True
-
-    cue.visible = True
-    cue.x = white_ball.x
-    cue.y = white_ball.y
 
 def main():
     clock = pygame.time.Clock()
@@ -95,7 +73,7 @@ def main():
                 mouse_pos = pygame.mouse.get_pos()
                 if reset_button_x <= mouse_pos[0] <= reset_button_x + reset_button_width and \
                         reset_button_y <= mouse_pos[1] <= reset_button_y + reset_button_height:
-                    reset_game(white_ball, red_ball, black_ball, cue)
+                    reset_game(white_ball, red_ball, black_ball, WINDOW_WIDTH, WINDOW_HEIGHT)
 
         # Bewegung der roten und schwarzen Kugeln, wenn nicht gestoßen
         if not cue.visible:
@@ -150,7 +128,7 @@ def main():
 
         # Überprüfung, ob Kugeln in Taschen gelocht wurden
         for ball in balls:
-            if ball.visible and any(check_pocket_collision(ball, pocket) for pocket in pockets):
+            if ball.visible and any(check_pocket_collision(ball, [pocket]) for pocket in pockets):
                 if ball == white_ball:
                     print("Weiße Kugel gelocht!")
                     ball.stop()
@@ -193,12 +171,6 @@ def main():
         clock.tick(60)
 
     pygame.quit()
-
-def check_pocket_collision(ball, pocket):
-    dx = ball.x - pocket.x
-    dy = ball.y - pocket.y
-    distance = math.sqrt(dx ** 2 + dy ** 2)
-    return distance <= pocket.radius
 
 if __name__ == "__main__":
     main()
