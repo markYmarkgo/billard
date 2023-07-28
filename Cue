@@ -1,19 +1,30 @@
 import pygame
-import math
 
-class Cue:
-    def __init__(self, x, y):
+class Ball:
+    def __init__(self, x, y, color, radius):
         self.x = x
         self.y = y
-        self.length = 100
+        self.color = color
+        self.radius = radius
+        self.vel_x = 0
+        self.vel_y = 0
+        self.visible = True
 
-    def follow_mouse(self, ball_x, ball_y, mouse_x, mouse_y):
-        self.angle = math.atan2(ball_y - self.y, ball_x - self.x)
-        self.x = ball_x + 50 * math.cos(self.angle)
-        self.y = ball_y + 50 * math.sin(self.angle)
+    def draw(self, screen):
+        if self.visible:
+            pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
 
-    def adjust_length(self, distance):
-        self.length = min(distance, 100)
+    def move(self):
+        if self.visible:
+            self.x += self.vel_x
+            self.y += self.vel_y
 
-    def draw(self, screen, ball_x, ball_y):
-        pygame.draw.line(screen, (255, 255, 255), (ball_x, ball_y), (ball_x + self.length * math.cos(self.angle), ball_y + self.length * math.sin(self.angle)), 5)
+    def check_wall_collision(self, window_width, window_height):
+        if self.x - self.radius <= 0 or self.x + self.radius >= window_width:
+            self.vel_x = -self.vel_x
+        if self.y - self.radius <= 0 or self.y + self.radius >= window_height:
+            self.vel_y = -self.vel_y
+
+    def stop(self):
+        self.vel_x = 0
+        self.vel_y = 0
