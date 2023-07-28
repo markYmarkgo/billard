@@ -1,115 +1,204 @@
 import pygame
 import math
 
+from Ball import Ball
+from Cue import Cue
+from Pocket import Pocket
+
+
+pygame.init()
+
 # Bildschirmabmessungen
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
+WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
+WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
 # Farben
-GREEN = (0, 128, 0)
 WHITE = (255, 255, 255)
+GREEN = (0, 128, 0)
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
+YELLOW = (255, 255, 0)
 
-# Taschenpositionen
-POCKET_POSITIONS = [(30, 30), (WINDOW_WIDTH // 2, 30), (WINDOW_WIDTH - 30, 30),
-                    (30, WINDOW_HEIGHT - 30), (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 30), (WINDOW_WIDTH - 30, WINDOW_HEIGHT - 30)]
+# Initialisierung des Fensters
+window = pygame.display.set_mode(WINDOW_SIZE)
+pygame.display.set_caption("Billard")
 
-# Kugelradius
-BALL_RADIUS = 20
+def reset_game(white_ball, red_ball, black_ball, cue):
+    white_ball.x = WINDOW_WIDTH // 4
+    white_ball.y = WINDOW_HEIGHT // 2
+    white_ball.vel_x = 0
+    white_ball.vel_y = 0
+    white_ball.visible = True
 
-# Klasse für den Tisch
-class Table:
-    def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+    red_ball.x = WINDOW_WIDTH * 3 // 4
+    red_ball.y = WINDOW_HEIGHT // 3
+    red_ball.vel_x = 0
+    red_ball.vel_y = 0
+    red_ball.visible = True
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, GREEN, pygame.Rect(self.x, self.y, self.width, self.height), 0)
+    black_ball.x = WINDOW_WIDTH * 3 // 4
+    black_ball.y = WINDOW_HEIGHT * 2 // 3
+    black_ball.vel_x = 0
+    black_ball.vel_y = 0
+    black_ball.visible = True
 
-# Klasse für die Taschen
-class Pocket:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.radius = 30
-
-    def draw(self, screen):
-        pygame.draw.circle(screen, BLACK, (self.x, self.y), self.radius)
-
-# Klasse für die Kugeln
-class Ball:
-    def __init__(self, x, y, color, radius):
-        self.x = x
-        self.y = y
-        self.color = color
-        self.radius = radius
-        self.vel_x = 0
-        self.vel_y = 0
-
-    def draw(self, screen):
-        pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
-
-    def update(self, table):
-        # Kugelbewegung hier implementieren (falls gewünscht)
-        pass
-
-# Klasse für das Queue
-class Cue:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.length = 200
-
-    def follow_mouse(self, mouse_x, mouse_y):
-        # Ausrichtung des Queues zur Mausposition berechnen
-        angle = math.atan2(mouse_y - self.y, mouse_x - self.x)
-        self.angle = angle
-
-    def draw(self, screen, ball_x, ball_y):
-        pygame.draw.line(screen, WHITE, (self.x, self.y), (ball_x, ball_y), 5)
+    cue.visible = True
+    cue.x = white_ball.x
+    cue.y = white_ball.y
 
 def main():
-    pygame.init()
-    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption("Billard")
+    clock = pygame.time.Clock()
 
-    table = Table(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
-    pockets = [Pocket(x, y) for x, y in POCKET_POSITIONS]
+    # Erstellen der Kugeln
+    white_ball = Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)
+    red_ball = Ball(WINDOW_WIDTH * 3 // 4, WINDOW_HEIGHT // 3, RED, 20)
+    black_ball = Ball(WINDOW_WIDTH * 3 // 4, WINDOW_HEIGHT * 2 // 3, BLACK, 20)
 
-    white_ball = Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, BALL_RADIUS)
-    red_ball = Ball(3 * WINDOW_WIDTH // 4, WINDOW_HEIGHT // 3, RED, BALL_RADIUS)
-    black_ball = Ball(3 * WINDOW_WIDTH // 4, 2 * WINDOW_HEIGHT // 3, BLACK, BALL_RADIUS)
+    # Erstellen des Queues
+    cue = Cue(white_ball.x, white_ball.y)
 
-    cue = Cue(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2)
+    # Taschen (Fangkörbe) erstellen
+    pocket1 = Pocket(30, 30, BLACK, 30)
+    pocket2 = Pocket(WINDOW_WIDTH - 30, 30, BLACK, 30)
+    pockets = [
+        pocket1, pocket2,
+        Pocket(30, WINDOW_HEIGHT - 30, BLACK, 30),
+        Pocket(WINDOW_WIDTH - 30, WINDOW_HEIGHT - 30, BLACK, 30),
+        Pocket(WINDOW_WIDTH // 2, 30, BLACK, 30),
+        Pocket(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 30, BLACK, 30)
+    ]
 
-    running = True
-    while running:
+    # Reset-Button erstellen
+    reset_button_x = (pocket1.x + pocket2.x) // 2 - 260
+    reset_button_y = 10
+    reset_button_width = 100
+    reset_button_height = 30
+
+    cue.visible = True
+
+    balls = [white_ball, red_ball, black_ball]
+
+    playing = True
+    while playing:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                playing = False
 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_q]:
-            running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if cue.visible:
+                    cue_vel = cue.length * 0.1
+                    white_ball.vel_x = cue_vel * math.cos(cue.angle)
+                    white_ball.vel_y = cue_vel * math.sin(cue.angle)
+                    cue.visible = False
 
-        white_ball.update(table)
-        cue.follow_mouse(*pygame.mouse.get_pos())
-        cue.draw(screen, white_ball.x, white_ball.y)
+                # Überprüfen, ob der Reset-Button angeklickt wurde
+                mouse_pos = pygame.mouse.get_pos()
+                if reset_button_x <= mouse_pos[0] <= reset_button_x + reset_button_width and \
+                        reset_button_y <= mouse_pos[1] <= reset_button_y + reset_button_height:
+                    reset_game(white_ball, red_ball, black_ball, cue)
 
-        screen.fill(GREEN)
-        table.draw(screen)
+        # Bewegung der roten und schwarzen Kugeln, wenn nicht gestoßen
+        if not cue.visible:
+            for ball in balls[1:]:
+                ball.move()
+                ball.check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
+
+                if abs(ball.vel_x) < 0.1 and abs(ball.vel_y) < 0.1:
+                    ball.stop()
+
+        # Bewegung der weißen Kugel
+        white_ball.move()
+        white_ball.check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
+
+        if abs(white_ball.vel_x) < 0.1 and abs(white_ball.vel_y) < 0.1:
+            white_ball.stop()
+            cue.visible = True
+            cue.x = white_ball.x
+            cue.y = white_ball.y
+
+        # Kollisionserkennung zwischen den Kugeln, wenn nicht gestoßen
+        if not cue.visible:
+            for i in range(len(balls)):
+                for j in range(i + 1, len(balls)):
+                    ball1 = balls[i]
+                    ball2 = balls[j]
+                    dx = ball1.x - ball2.x
+                    dy = ball1.y - ball2.y
+                    distance = math.sqrt(dx ** 2 + dy ** 2)
+
+                    if distance <= ball1.radius + ball2.radius:
+                        # Berechnung der neuen Geschwindigkeiten nach der Kollision
+                        angle = math.atan2(dy, dx)
+                        mass1 = 1  # Masse der weißen Kugel
+                        mass2 = 2  # Masse der roten und schwarzen Kugel
+
+                        # Geschwindigkeitsvektoren der Kugeln
+                        v1 = math.sqrt(ball1.vel_x ** 2 + ball1.vel_y ** 2)
+                        v2 = math.sqrt(ball2.vel_x ** 2 + ball2.vel_y ** 2)
+                        phi1 = math.atan2(ball1.vel_y, ball1.vel_x)
+                        phi2 = math.atan2(ball2.vel_y, ball2.vel_x)
+
+                        # Berechnung der neuen Geschwindigkeiten nach der Kollision
+                        ball1.vel_x = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (2 * mass2 * v2 * math.cos(phi2 - angle))) / (
+                                mass1 + mass2)) * math.cos(angle) + v1 * math.sin(phi1 - angle) * math.cos(angle + math.pi / 2)
+                        ball1.vel_y = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (2 * mass2 * v2 * math.cos(phi2 - angle))) / (
+                                mass1 + mass2)) * math.sin(angle) + v1 * math.sin(phi1 - angle) * math.sin(angle + math.pi / 2)
+                        ball2.vel_x = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (2 * mass1 * v1 * math.cos(phi1 - angle))) / (
+                                mass1 + mass2)) * math.cos(angle) + v2 * math.sin(phi2 - angle) * math.cos(angle + math.pi / 2)
+                        ball2.vel_y = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (2 * mass1 * v1 * math.cos(phi1 - angle))) / (
+                                mass1 + mass2)) * math.sin(angle) + v2 * math.sin(phi2 - angle) * math.sin(angle + math.pi / 2)
+
+        # Überprüfung, ob Kugeln in Taschen gelocht wurden
+        for ball in balls:
+            if ball.visible and any(check_pocket_collision(ball, pocket) for pocket in pockets):
+                if ball == white_ball:
+                    print("Weiße Kugel gelocht!")
+                    ball.stop()
+                    ball.x = WINDOW_WIDTH // 4
+                    ball.y = WINDOW_HEIGHT // 2
+                    cue.visible = True
+                    cue.x = ball.x
+                    cue.y = ball.y
+                elif ball == red_ball:
+                    print("Rote Kugel gelocht!")
+                    ball.visible = False
+                elif ball == black_ball:
+                    print("Schwarze Kugel gelocht!")
+                    ball.visible = False
+
+        # Hintergrund zeichnen
+        window.fill(GREEN)
+
+        # Taschen zeichnen
         for pocket in pockets:
-            pocket.draw(screen)
-        white_ball.draw(screen)
-        red_ball.draw(screen)
-        black_ball.draw(screen)
+            pocket.draw(window)
 
-        pygame.display.flip()
+        # Kugeln zeichnen
+        for ball in balls:
+            ball.draw(window)
+
+        # Queue zeichnen
+        cue.x = white_ball.x
+        cue.y = white_ball.y
+        cue.update()
+        cue.draw(window)
+
+        # Reset-Button zeichnen
+        pygame.draw.rect(window, RED, (reset_button_x, reset_button_y, reset_button_width, reset_button_height))
+        font = pygame.font.SysFont(None, 25)
+        text = font.render("RESET", True, WHITE)
+        window.blit(text, (reset_button_x + 25, reset_button_y + 8))
+
+        pygame.display.update()
+        clock.tick(60)
 
     pygame.quit()
+
+def check_pocket_collision(ball, pocket):
+    dx = ball.x - pocket.x
+    dy = ball.y - pocket.y
+    distance = math.sqrt(dx ** 2 + dy ** 2)
+    return distance <= pocket.radius
 
 if __name__ == "__main__":
     main()
