@@ -1,28 +1,30 @@
 import pygame
-import math
 
 class Ball:
-    def __init__(self, x, y, radius, color):
+    def __init__(self, x, y, color, radius):
         self.x = x
         self.y = y
-        self.radius = radius
         self.color = color
-        self.speed = 0
-        self.direction = 0
-        self.vel_x = 0  # Geschwindigkeit in x-Richtung
-        self.vel_y = 0  # Geschwindigkeit in y-Richtung
-
-    def update(self, table):
-        # Update ball position here
-        self.x += self.vel_x
-        self.y += self.vel_y
-
-        # Check for collisions with the table and update velocity if needed
-        self.check_table_collision(table)
-
-    def check_table_collision(self, table):
-        # Implement table collision logic here
-        pass
+        self.radius = radius
+        self.vel_x = 0
+        self.vel_y = 0
+        self.visible = True
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+        if self.visible:
+            pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+
+    def move(self):
+        if self.visible:
+            self.x += self.vel_x
+            self.y += self.vel_y
+
+    def check_wall_collision(self, window_width, window_height):
+        if self.x - self.radius <= 0 or self.x + self.radius >= window_width:
+            self.vel_x = -self.vel_x
+        if self.y - self.radius <= 0 or self.y + self.radius >= window_height:
+            self.vel_y = -self.vel_y
+
+    def stop(self):
+        self.vel_x = 0
+        self.vel_y = 0
