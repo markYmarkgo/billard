@@ -28,26 +28,10 @@ def check_pocket_collision(ball, pockets):
 
     return False
 
-def arrange_balls_in_triangle(ball_colors, WINDOW_WIDTH, WINDOW_HEIGHT):
+def arrange_balls_at_positions(ball_colors, positions):
     colored_balls = []
-
-    # Calculate the positions for arranging the balls in an equilateral triangle
-    rows = 4
-    ball_radius = 20
-    start_x = WINDOW_WIDTH * 3 // 4  # Verschiebung nach rechts
-    start_y = WINDOW_HEIGHT // 2 - (rows // 2) * (2 * ball_radius) + ball_radius
-
-    color_count = {}
-    for color in ball_colors:
-        color_count[color] = 0
-
-    for i in range(rows):
-        num_balls_in_row = i + 1
-        row_y = start_y + i * (2 * ball_radius * math.sin(math.pi / 3))
-
-        for j in range(num_balls_in_row):
-            color_count[ball_colors[j]] += 1
-            ball = Ball(start_x + (j - i / 2) * (ball_radius * 2), row_y, ball_colors[j], ball_radius)
-            colored_balls.append(ball)
-
+    for pos, color in zip(positions, ball_colors):
+        colored_balls.append(Ball(pos[0], pos[1], color))
     return colored_balls
+
+
