@@ -164,7 +164,7 @@ def main():
                     print("Schwarze Kugel gelocht!")
                     ball.visible = False
 
-        # Hintergrund zeichnen
+        # Hintergrund zeichnen #
         window.fill(GREEN)
 
         # Taschen zeichnen
