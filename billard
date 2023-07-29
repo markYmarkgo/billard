@@ -32,7 +32,25 @@ def main():
     clock = pygame.time.Clock()
 
     # Kugelfarben definieren
-    ball_colors = [RED, RED, GREEN, GREEN, BLUE, BLUE, BROWN, BROWN, LIGHT_BROWN, LIGHT_BROWN, YELLOW, YELLOW, VIOLET, VIOLET, BLACK]
+    ball_colors = [
+        RED,
+        GREEN,
+        BLUE,
+        BROWN,
+        VIOLET,
+        RED,
+        LIGHT_BROWN,
+        GREEN,
+        BLACK,
+        LIGHT_BROWN,
+        YELLOW,
+        BROWN,
+        BLUE,
+        YELLOW,
+        VIOLET,
+
+
+    ]
 
     # Erstellen der Kugeln und Speichern in einer Liste
     balls = [Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)]
