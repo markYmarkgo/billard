@@ -128,7 +128,8 @@ def main():
 
         # Überprüfung, ob Kugeln in Taschen gelocht wurden
         for ball in balls:
-            if ball.visible and any(check_pocket_collision(ball, [pocket]) for pocket in pockets):
+            pocket_collisions = check_pocket_collision(ball, pockets)
+            if ball.visible and all(pocket_collisions):
                 if ball == white_ball:
                     print("Weiße Kugel gelocht!")
                     ball.stop()
