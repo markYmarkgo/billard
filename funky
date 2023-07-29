@@ -29,13 +29,11 @@ def check_pocket_collision(ball, pockets):
 def arrange_balls_in_triangle(ball_colors, WINDOW_WIDTH, WINDOW_HEIGHT):
     colored_balls = []
 
-    # Calculate the positions for arranging the balls in a triangle on the right side
+    # Calculate the positions for arranging the balls in an equilateral triangle
     rows = 5
-    spacing_x = 40
-    spacing_y = 40
     ball_radius = 20
-    start_x = WINDOW_WIDTH - ball_radius - 30
-    start_y = WINDOW_HEIGHT // 2 - (rows // 2) * (2 * ball_radius + spacing_y) + ball_radius
+    start_x = WINDOW_WIDTH * 3 // 4  # Verschiebung nach rechts
+    start_y = WINDOW_HEIGHT // 2 - (rows // 2) * (2 * ball_radius) + ball_radius
 
     color_count = {}
     for color in ball_colors:
@@ -43,17 +41,15 @@ def arrange_balls_in_triangle(ball_colors, WINDOW_WIDTH, WINDOW_HEIGHT):
 
     for i in range(rows):
         num_balls_in_row = i + 1
-        row_y = start_y + i * (2 * ball_radius + spacing_y)
-        row_color = ball_colors[i % len(ball_colors)]
+        row_y = start_y + i * (2 * ball_radius * math.sin(math.pi / 3))
 
         for j in range(num_balls_in_row):
-            color_count[row_color] += 1
-            ball = Ball(start_x - j * (ball_radius + spacing_x), row_y, row_color, ball_radius)
+            color_count[ball_colors[j % len(ball_colors)]] += 1
+            ball = Ball(start_x + (j - i / 2) * (ball_radius * 2), row_y, ball_colors[j % len(ball_colors)], ball_radius)
             colored_balls.append(ball)
 
-    # Remove the second black ball
-    black_balls = [ball for ball in colored_balls if ball.color == (0, 0, 0)]
-    if len(black_balls) > 1:
-        colored_balls.remove(black_balls[1])
-
     return colored_balls
+
+
+
+
