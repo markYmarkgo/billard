@@ -1,6 +1,8 @@
 import math
 from Ball import Ball
 
+import math
+
 def reset_game(white_ball, colored_balls, WINDOW_WIDTH, WINDOW_HEIGHT):
     white_ball.x = WINDOW_WIDTH // 4
     white_ball.y = WINDOW_HEIGHT // 2
@@ -44,12 +46,8 @@ def arrange_balls_in_triangle(ball_colors, WINDOW_WIDTH, WINDOW_HEIGHT):
         row_y = start_y + i * (2 * ball_radius * math.sin(math.pi / 3))
 
         for j in range(num_balls_in_row):
-            color_count[ball_colors[j % len(ball_colors)]] += 1
-            ball = Ball(start_x + (j - i / 2) * (ball_radius * 2), row_y, ball_colors[j % len(ball_colors)], ball_radius)
-            colored_balls.append(ball)
+            color = ball_colors.pop(0)
+            colored_balls.append(Ball(start_x + (j - i / 2) * (ball_radius * 2), row_y, color, ball_radius))
 
     return colored_balls
-
-
-
 
