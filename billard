@@ -13,9 +13,9 @@ WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
 # Farben
 WHITE = (255, 255, 255)
-DARK_GREEN = (0, 100, 0)
+DARK_GREEN = (0, 80, 0)  # Dunkleres Grün für das Spielfeld
 RED = (255, 0, 0)
-GREEN = (0, 255, 0)
+GREEN = (0, 200, 0)  # Hellere grüne Farbe für die Kugel
 BLUE = (0, 0, 255)
 BROWN = (139, 69, 19)
 LIGHT_BROWN = (210, 180, 140)
@@ -32,7 +32,7 @@ def main():
     clock = pygame.time.Clock()
 
     # Kugelfarben definieren
-    ball_colors = [RED, GREEN, GREEN, BLUE, BROWN, LIGHT_BROWN, YELLOW, VIOLET, BLACK]
+    ball_colors = [RED, RED, GREEN, GREEN, BLUE, BLUE, BROWN, BROWN, LIGHT_BROWN, LIGHT_BROWN, YELLOW, YELLOW, VIOLET, VIOLET, BLACK]
 
     # Erstellen der Kugeln und Speichern in einer Liste
     balls = [Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)]
@@ -169,8 +169,8 @@ def main():
                         if ball.color == color:
                             if color == RED:
                                 color_name = "rot"
-                            elif color == GREEN:
-                                color_name = "grün"
+                            elif color == DARK_GREEN2:
+                                color_name = "dunkel grün"
                             elif color == BLUE:
                                 color_name = "blau"
                             elif color == BROWN:
