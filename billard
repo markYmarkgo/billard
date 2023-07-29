@@ -12,7 +12,7 @@ pygame.init()
 WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
 WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
-# Farben
+# Farben Test ...
 WHITE = (255, 255, 255)
 GREEN = (0, 128, 0)
 RED = (255, 0, 0)
@@ -164,7 +164,7 @@ def main():
                     print("Schwarze Kugel gelocht!")
                     ball.visible = False
 
-        # Hintergrund zeichnen #
+        # Hintergrund zeichnen
         window.fill(GREEN)
 
         # Taschen zeichnen
