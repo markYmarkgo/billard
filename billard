@@ -1,10 +1,9 @@
 import pygame
 import math
-
 from Ball import Ball
 from Cue import Cue
 from Pocket import Pocket
-from funky import reset_game, check_pocket_collision
+from funky import reset_game, check_pocket_collision, arrange_balls_in_triangle
 
 pygame.init()
 
@@ -12,12 +11,17 @@ pygame.init()
 WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
 WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
-# Farben Test ...
+# Farben
 WHITE = (255, 255, 255)
 GREEN = (0, 128, 0)
 RED = (255, 0, 0)
-BLACK = (0, 0, 0)
+GREEN_2 = (0, 255, 0)
+BLUE = (0, 0, 255)
+BROWN = (139, 69, 19)
+LIGHT_BROWN = (210, 180, 140)
 YELLOW = (255, 255, 0)
+PURPLE = (128, 0, 128)
+BLACK = (0, 0, 0)
 
 # Initialisierung des Fensters
 window = pygame.display.set_mode(WINDOW_SIZE)
@@ -27,13 +31,17 @@ pygame.display.set_caption("Billard")
 def main():
     clock = pygame.time.Clock()
 
-    # Erstellen der Kugeln
-    white_ball = Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)
-    red_ball = Ball(WINDOW_WIDTH * 3 // 4, WINDOW_HEIGHT // 3, RED, 20)
-    black_ball = Ball(WINDOW_WIDTH * 3 // 4, WINDOW_HEIGHT * 2 // 3, BLACK, 20)
+    # Kugelfarben definieren
+    ball_colors = [RED, GREEN, GREEN_2, BLUE, BROWN, LIGHT_BROWN, YELLOW, PURPLE, BLACK]
+
+    # Erstellen der Kugeln und Speichern in einer Liste
+    balls = [Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)]
+
+    # Erstellen der restlichen Kugeln und Anordnen in einem Dreieck
+    balls += arrange_balls_in_triangle(ball_colors, WINDOW_WIDTH, WINDOW_HEIGHT)
 
     # Erstellen des Queues
-    cue = Cue(white_ball.x, white_ball.y)
+    cue = Cue(balls[0].x, balls[0].y)
 
     # Taschen (Fangkörbe) erstellen
     pocket1 = Pocket(30, 30, BLACK, 30)
@@ -54,8 +62,6 @@ def main():
 
     cue.visible = True
 
-    balls = [white_ball, red_ball, black_ball]
-
     # Dämpfungsfaktor für das Stoppen der Kugeln
     damping = 0.95
 
@@ -68,20 +74,20 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if cue.visible:
                     cue_vel = cue.length * 0.1
-                    white_ball.vel_x = cue_vel * math.cos(cue.angle)
-                    white_ball.vel_y = cue_vel * math.sin(cue.angle)
+                    balls[0].vel_x = cue_vel * math.cos(cue.angle)
+                    balls[0].vel_y = cue_vel * math.sin(cue.angle)
                     cue.visible = False
 
                 # Überprüfen, ob der Reset-Button angeklickt wurde
                 mouse_pos = pygame.mouse.get_pos()
                 if reset_button_x <= mouse_pos[0] <= reset_button_x + reset_button_width and \
                         reset_button_y <= mouse_pos[1] <= reset_button_y + reset_button_height:
-                    reset_game(white_ball, red_ball, black_ball, WINDOW_WIDTH, WINDOW_HEIGHT)
+                    reset_game(balls[0], balls[1:], WINDOW_WIDTH, WINDOW_HEIGHT)
                     cue.visible = True
-                    cue.x = white_ball.x
-                    cue.y = white_ball.y
+                    cue.x = balls[0].x
+                    cue.y = balls[0].y
 
-        # Bewegung der roten und schwarzen Kugeln, wenn nicht gestoßen
+        # Bewegung der Kugeln, wenn nicht gestoßen
         if not cue.visible:
             for ball in balls[1:]:
                 ball.move()
@@ -96,20 +102,20 @@ def main():
                     ball.vel_y *= damping
 
         # Bewegung der weißen Kugel
-        white_ball.move()
-        white_ball.check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
+        balls[0].move()
+        balls[0].check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
 
         # Dämpfung der Geschwindigkeit der weißen Kugel, wenn sie nahezu gestoppt ist
-        if abs(white_ball.vel_x) < 0.1 and abs(white_ball.vel_y) < 0.1:
-            white_ball.vel_x = 0
-            white_ball.vel_y = 0
+        if abs(balls[0].vel_x) < 0.1 and abs(balls[0].vel_y) < 0.1:
+            balls[0].vel_x = 0
+            balls[0].vel_y = 0
             if not cue.visible:
                 cue.visible = True
-                cue.x = white_ball.x
-                cue.y = white_ball.y
+                cue.x = balls[0].x
+                cue.y = balls[0].y
         else:
-            white_ball.vel_x *= damping
-            white_ball.vel_y *= damping
+            balls[0].vel_x *= damping
+            balls[0].vel_y *= damping
 
         # Kollisionserkennung zwischen den Kugeln, wenn nicht gestoßen
         if not cue.visible:
@@ -125,7 +131,7 @@ def main():
                         # Berechnung der neuen Geschwindigkeiten nach der Kollision
                         angle = math.atan2(dy, dx)
                         mass1 = 1  # Masse der weißen Kugel
-                        mass2 = 2  # Masse der roten und schwarzen Kugel
+                        mass2 = 2  # Masse der anderen Kugeln
 
                         # Geschwindigkeitsvektoren der Kugeln
                         v1 = math.sqrt(ball1.vel_x ** 2 + ball1.vel_y ** 2)
@@ -147,7 +153,7 @@ def main():
         for ball in balls:
             pocket_collision = check_pocket_collision(ball, pockets)
             if ball.visible and pocket_collision:
-                if ball == white_ball:
+                if ball == balls[0]:
                     print("Weiße Kugel gelocht!")
                     ball.vel_x = 0
                     ball.vel_y = 0
@@ -157,11 +163,28 @@ def main():
                         cue.visible = True
                         cue.x = ball.x
                         cue.y = ball.y
-                elif ball == red_ball:
-                    print("Rote Kugel gelocht!")
-                    ball.visible = False
-                elif ball == black_ball:
-                    print("Schwarze Kugel gelocht!")
+                else:
+                    color_name = ""
+                    for color in ball_colors:
+                        if ball.color == color:
+                            if color == RED:
+                                color_name = "rot"
+                            elif color == GREEN or color == GREEN_2:
+                                color_name = "grün"
+                            elif color == BLUE:
+                                color_name = "blau"
+                            elif color == BROWN:
+                                color_name = "braun"
+                            elif color == LIGHT_BROWN:
+                                color_name = "hellbraun"
+                            elif color == YELLOW:
+                                color_name = "gelb"
+                            elif color == PURPLE:
+                                color_name = "violett"
+                            elif color == BLACK:
+                                color_name = "schwarz"
+                            break
+                    print(f"{color_name.capitalize()} Kugel gelocht!")
                     ball.visible = False
 
         # Hintergrund zeichnen
@@ -189,6 +212,7 @@ def main():
         clock.tick(60)
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()
