@@ -1,53 +1,236 @@
+import pygame
 import math
 from Ball import Ball
+from Cue import Cue
+from Pocket import Pocket
+from funky import reset_game, check_pocket_collision, arrange_balls_in_triangle
 
-import math
+pygame.init()
 
-def reset_game(white_ball, colored_balls, WINDOW_WIDTH, WINDOW_HEIGHT):
-    white_ball.x = WINDOW_WIDTH // 4
-    white_ball.y = WINDOW_HEIGHT // 2
-    white_ball.vel_x = 0
-    white_ball.vel_y = 0
-    white_ball.visible = True
+# Bildschirmabmessungen
+WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
+WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
-    for i, ball in enumerate(colored_balls):
-        ball.x = WINDOW_WIDTH * 3 // 4
-        ball.y = WINDOW_HEIGHT * (i + 1) // (len(colored_balls) + 1)
-        ball.vel_x = 0
-        ball.vel_y = 0
-        ball.visible = True
+# Farben
+WHITE = (255, 255, 255)
+DARK_GREEN = (0, 80, 0)  # Dunkleres Grün für das Spielfeld
+RED = (255, 0, 0)
+GREEN = (0, 200, 0)  # Hellere grüne Farbe für die Kugel
+BLUE = (0, 0, 255)
+BROWN = (139, 69, 19)
+LIGHT_BROWN = (210, 180, 140)
+YELLOW = (255, 255, 0)
+VIOLET = (128, 0, 128)
+BLACK = (0, 0, 0)
 
-def check_pocket_collision(ball, pockets):
-    for pocket_obj in pockets:
-        dx = ball.x - pocket_obj.x
-        dy = ball.y - pocket_obj.y
-        distance = math.sqrt(dx ** 2 + dy ** 2)
+# Initialisierung des Fensters
+window = pygame.display.set_mode(WINDOW_SIZE)
+pygame.display.set_caption("Billard")
 
-        if distance <= pocket_obj.radius:
-            return True
 
-    return False
+def main():
+    clock = pygame.time.Clock()
 
-def arrange_balls_in_triangle(ball_colors, WINDOW_WIDTH, WINDOW_HEIGHT):
-    colored_balls = []
+    # Kugelfarben definieren
+    ball_colors = [
+        RED,
+        GREEN,
+        BLUE,
+        BROWN,
+        VIOLET,
+        RED,
+        LIGHT_BROWN,
+        GREEN,
+        BLACK,
+        LIGHT_BROWN,
+        YELLOW,
+        BROWN,
+        BLUE,
+        YELLOW,
+        VIOLET,
 
-    # Calculate the positions for arranging the balls in an equilateral triangle
-    rows = 5
-    ball_radius = 20
-    start_x = WINDOW_WIDTH * 3 // 4  # Verschiebung nach rechts
-    start_y = WINDOW_HEIGHT // 2 - (rows // 2) * (2 * ball_radius) + ball_radius
 
-    color_count = {}
-    for color in ball_colors:
-        color_count[color] = 0
+    ]
 
-    for i in range(rows):
-        num_balls_in_row = i + 1
-        row_y = start_y + i * (2 * ball_radius * math.sin(math.pi / 3))
+    # Erstellen der Kugeln und Speichern in einer Liste
+    balls = [Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)]
 
-        for j in range(num_balls_in_row):
-            color = ball_colors.pop(0)
-            colored_balls.append(Ball(start_x + (j - i / 2) * (ball_radius * 2), row_y, color, ball_radius))
+    # Erstellen der restlichen Kugeln und Anordnen in einem Dreieck
+    balls += arrange_balls_in_triangle(ball_colors, WINDOW_WIDTH, WINDOW_HEIGHT)
 
-    return colored_balls
+    # Erstellen des Queues
+    cue = Cue(balls[0].x, balls[0].y)
 
+    # Taschen (Fangkörbe) erstellen
+    pocket1 = Pocket(30, 30, BLACK, 30)
+    pocket2 = Pocket(WINDOW_WIDTH - 30, 30, BLACK, 30)
+    pockets = [
+        pocket1, pocket2,
+        Pocket(30, WINDOW_HEIGHT - 30, BLACK, 30),
+        Pocket(WINDOW_WIDTH - 30, WINDOW_HEIGHT - 30, BLACK, 30),
+        Pocket(WINDOW_WIDTH // 2, 30, BLACK, 30),
+        Pocket(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 30, BLACK, 30)
+    ]
+
+    # Reset-Button erstellen
+    reset_button_x = (pocket1.x + pocket2.x) // 2 - 260
+    reset_button_y = 10
+    reset_button_width = 100
+    reset_button_height = 30
+
+    cue.visible = True
+
+    # Dämpfungsfaktor für das Stoppen der Kugeln
+    damping = 0.95
+
+    playing = True
+    while playing:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                playing = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if cue.visible:
+                    cue_vel = cue.length * 0.1
+                    balls[0].vel_x = cue_vel * math.cos(cue.angle)
+                    balls[0].vel_y = cue_vel * math.sin(cue.angle)
+                    cue.visible = False
+
+                # Überprüfen, ob der Reset-Button angeklickt wurde
+                mouse_pos = pygame.mouse.get_pos()
+                if reset_button_x <= mouse_pos[0] <= reset_button_x + reset_button_width and \
+                        reset_button_y <= mouse_pos[1] <= reset_button_y + reset_button_height:
+                    reset_game(balls[0], balls[1:], WINDOW_WIDTH, WINDOW_HEIGHT)
+                    cue.visible = True
+                    cue.x = balls[0].x
+                    cue.y = balls[0].y
+
+        # Bewegung der Kugeln, wenn nicht gestoßen
+        if not cue.visible:
+            for ball in balls[1:]:
+                ball.move()
+                ball.check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
+
+                # Dämpfung der Geschwindigkeit, wenn die Kugel nahezu gestoppt ist
+                if abs(ball.vel_x) < 0.1 and abs(ball.vel_y) < 0.1:
+                    ball.vel_x = 0
+                    ball.vel_y = 0
+                else:
+                    ball.vel_x *= damping
+                    ball.vel_y *= damping
+
+        # Bewegung der weißen Kugel
+        balls[0].move()
+        balls[0].check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
+
+        # Dämpfung der Geschwindigkeit der weißen Kugel, wenn sie nahezu gestoppt ist
+        if abs(balls[0].vel_x) < 0.1 and abs(balls[0].vel_y) < 0.1:
+            balls[0].vel_x = 0
+            balls[0].vel_y = 0
+            if not cue.visible:
+                cue.visible = True
+                cue.x = balls[0].x
+                cue.y = balls[0].y
+        else:
+            balls[0].vel_x *= damping
+            balls[0].vel_y *= damping
+
+        # Kollisionserkennung zwischen den Kugeln, wenn nicht gestoßen
+        if not cue.visible:
+            for i in range(len(balls)):
+                for j in range(i + 1, len(balls)):
+                    ball1 = balls[i]
+                    ball2 = balls[j]
+                    dx = ball1.x - ball2.x
+                    dy = ball1.y - ball2.y
+                    distance = math.sqrt(dx ** 2 + dy ** 2)
+
+                    if distance <= ball1.radius + ball2.radius:
+                        # Berechnung der neuen Geschwindigkeiten nach der Kollision
+                        angle = math.atan2(dy, dx)
+                        mass1 = 1  # Masse der weißen Kugel
+                        mass2 = 2  # Masse der anderen Kugeln
+
+                        # Geschwindigkeitsvektoren der Kugeln
+                        v1 = math.sqrt(ball1.vel_x ** 2 + ball1.vel_y ** 2)
+                        v2 = math.sqrt(ball2.vel_x ** 2 + ball2.vel_y ** 2)
+                        phi1 = math.atan2(ball1.vel_y, ball1.vel_x)
+                        phi2 = math.atan2(ball2.vel_y, ball2.vel_x)
+
+                        # Berechnung der neuen Geschwindigkeiten nach der Kollision
+                        ball1.vel_x = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (2 * mass2 * v2 * math.cos(phi2 - angle))) / (
+                                mass1 + mass2)) * math.cos(angle) + v1 * math.sin(phi1 - angle) * math.cos(angle + math.pi / 2)
+                        ball1.vel_y = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (2 * mass2 * v2 * math.cos(phi2 - angle))) / (
+                                mass1 + mass2)) * math.sin(angle) + v1 * math.sin(phi1 - angle) * math.sin(angle + math.pi / 2)
+                        ball2.vel_x = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (2 * mass1 * v1 * math.cos(phi1 - angle))) / (
+                                mass1 + mass2)) * math.cos(angle) + v2 * math.sin(phi2 - angle) * math.cos(angle + math.pi / 2)
+                        ball2.vel_y = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (2 * mass1 * v1 * math.cos(phi1 - angle))) / (
+                                mass1 + mass2)) * math.sin(angle) + v2 * math.sin(phi2 - angle) * math.sin(angle + math.pi / 2)
+
+        # Überprüfung, ob Kugeln in Taschen gelocht wurden
+        for ball in balls:
+            pocket_collision = check_pocket_collision(ball, pockets)
+            if ball.visible and pocket_collision:
+                if ball == balls[0]:
+                    print("Weiße Kugel gelocht!")
+                    ball.vel_x = 0
+                    ball.vel_y = 0
+                    ball.x = WINDOW_WIDTH // 4
+                    ball.y = WINDOW_HEIGHT // 2
+                    if not cue.visible:
+                        cue.visible = True
+                        cue.x = ball.x
+                        cue.y = ball.y
+                else:
+                    color_name = ""
+                    for color in ball_colors:
+                        if ball.color == color:
+                            if color == RED:
+                                color_name = "rot"
+                            elif color == DARK_GREEN2:
+                                color_name = "dunkel grün"
+                            elif color == BLUE:
+                                color_name = "blau"
+                            elif color == BROWN:
+                                color_name = "braun"
+                            elif color == LIGHT_BROWN:
+                                color_name = "hellbraun"
+                            elif color == YELLOW:
+                                color_name = "gelb"
+                            elif color == VIOLET:
+                                color_name = "violett"
+                            elif color == BLACK:
+                                color_name = "schwarz"
+                            break
+                    print(f"{color_name.capitalize()} Kugel gelocht!")
+                    ball.visible = False
+
+        # Hintergrund zeichnen
+        window.fill(DARK_GREEN)
+
+        # Taschen zeichnen
+        for pocket in pockets:
+            pocket.draw(window)
+
+        # Kugeln zeichnen
+        for ball in balls:
+            ball.draw(window)
+
+        # Queue zeichnen
+        cue.update()
+        cue.draw(window)
+
+        # Reset-Button zeichnen
+        pygame.draw.rect(window, RED, (reset_button_x, reset_button_y, reset_button_width, reset_button_height))
+        font = pygame.font.SysFont(None, 25)
+        text = font.render("RESET", True, WHITE)
+        window.blit(text, (reset_button_x + 25, reset_button_y + 8))
+
+        pygame.display.update()
+        clock.tick(60)
+
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
