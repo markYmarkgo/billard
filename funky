@@ -1,23 +1,19 @@
 import math
+from Ball import Ball
 
-def reset_game(white_ball, red_ball, black_ball, WINDOW_WIDTH, WINDOW_HEIGHT):
+def reset_game(white_ball, colored_balls, WINDOW_WIDTH, WINDOW_HEIGHT):
     white_ball.x = WINDOW_WIDTH // 4
     white_ball.y = WINDOW_HEIGHT // 2
     white_ball.vel_x = 0
     white_ball.vel_y = 0
     white_ball.visible = True
 
-    red_ball.x = WINDOW_WIDTH * 3 // 4
-    red_ball.y = WINDOW_HEIGHT // 3
-    red_ball.vel_x = 0
-    red_ball.vel_y = 0
-    red_ball.visible = True
-
-    black_ball.x = WINDOW_WIDTH * 3 // 4
-    black_ball.y = WINDOW_HEIGHT * 2 // 3
-    black_ball.vel_x = 0
-    black_ball.vel_y = 0
-    black_ball.visible = True
+    for i, ball in enumerate(colored_balls):
+        ball.x = WINDOW_WIDTH * 3 // 4
+        ball.y = WINDOW_HEIGHT * (i + 1) // (len(colored_balls) + 1)
+        ball.vel_x = 0
+        ball.vel_y = 0
+        ball.visible = True
 
 def check_pocket_collision(ball, pockets):
     for pocket_obj in pockets:
@@ -30,3 +26,34 @@ def check_pocket_collision(ball, pockets):
 
     return False
 
+def arrange_balls_in_triangle(ball_colors, WINDOW_WIDTH, WINDOW_HEIGHT):
+    colored_balls = []
+
+    # Calculate the positions for arranging the balls in a triangle on the right side
+    rows = 5
+    spacing_x = 40
+    spacing_y = 40
+    ball_radius = 20
+    start_x = WINDOW_WIDTH - ball_radius - 30
+    start_y = WINDOW_HEIGHT // 2 - (rows // 2) * (2 * ball_radius + spacing_y) + ball_radius
+
+    color_count = {}
+    for color in ball_colors:
+        color_count[color] = 0
+
+    for i in range(rows):
+        num_balls_in_row = i + 1
+        row_y = start_y + i * (2 * ball_radius + spacing_y)
+        row_color = ball_colors[i % len(ball_colors)]
+
+        for j in range(num_balls_in_row):
+            color_count[row_color] += 1
+            ball = Ball(start_x - j * (ball_radius + spacing_x), row_y, row_color, ball_radius)
+            colored_balls.append(ball)
+
+    # Remove the second black ball
+    black_balls = [ball for ball in colored_balls if ball.color == (0, 0, 0)]
+    if len(black_balls) > 1:
+        colored_balls.remove(black_balls[1])
+
+    return colored_balls
