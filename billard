@@ -3,7 +3,7 @@ import math
 from Ball import Ball
 from Cue import Cue
 from Pocket import Pocket
-from funky import reset_game, check_pocket_collision, arrange_balls_in_triangle
+from funky import arrange_balls_at_positions, reset_game, check_pocket_collision
 
 pygame.init()
 
@@ -33,30 +33,21 @@ def main():
 
     # Kugelfarben definieren
     ball_colors = [
-        RED,
-        GREEN,
-        BLUE,
-        BROWN,
-        VIOLET,
-        RED,
-        LIGHT_BROWN,
-        GREEN,
-        BLACK,
-        LIGHT_BROWN,
-        YELLOW,
-        BROWN,
-        BLUE,
-        YELLOW,
-        VIOLET,
+        WHITE, RED, GREEN, BLUE, BROWN, LIGHT_BROWN, YELLOW, VIOLET,
+        RED, GREEN, BLUE, BROWN, LIGHT_BROWN, YELLOW, VIOLET, BLACK
+    ]
 
-
+    # Positionen der Kugeln
+    positions = [
+        (WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2),
+        (WINDOW_WIDTH * 3.5 // 4, WINDOW_HEIGHT // 2 + 40),
+        (WINDOW_WIDTH * 3 // 4 + 40, WINDOW_HEIGHT // 2),
+        (WINDOW_WIDTH * 3 // 4 + 40, WINDOW_HEIGHT // 2 + 80),
+        # Füge hier die restlichen Positionen der Kugeln hinzu...
     ]
 
     # Erstellen der Kugeln und Speichern in einer Liste
-    balls = [Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)]
-
-    # Erstellen der restlichen Kugeln und Anordnen in einem Dreieck
-    balls += arrange_balls_in_triangle(ball_colors, WINDOW_WIDTH, WINDOW_HEIGHT)
+    balls = arrange_balls_at_positions(ball_colors, positions)
 
     # Erstellen des Queues
     cue = Cue(balls[0].x, balls[0].y)
@@ -187,8 +178,8 @@ def main():
                         if ball.color == color:
                             if color == RED:
                                 color_name = "rot"
-                            elif color == DARK_GREEN2:
-                                color_name = "dunkel grün"
+                            elif color == GREEN:
+                                color_name = "grün"
                             elif color == BLUE:
                                 color_name = "blau"
                             elif color == BROWN:
