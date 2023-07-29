@@ -13,14 +13,14 @@ WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
 # Farben
 WHITE = (255, 255, 255)
-GREEN = (0, 128, 0)
+DARK_GREEN = (0, 100, 0)
 RED = (255, 0, 0)
-GREEN_2 = (0, 255, 0)
+GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 BROWN = (139, 69, 19)
 LIGHT_BROWN = (210, 180, 140)
 YELLOW = (255, 255, 0)
-PURPLE = (128, 0, 128)
+VIOLET = (128, 0, 128)
 BLACK = (0, 0, 0)
 
 # Initialisierung des Fensters
@@ -32,7 +32,7 @@ def main():
     clock = pygame.time.Clock()
 
     # Kugelfarben definieren
-    ball_colors = [RED, GREEN, GREEN_2, BLUE, BROWN, LIGHT_BROWN, YELLOW, PURPLE, BLACK]
+    ball_colors = [RED, GREEN, GREEN, BLUE, BROWN, LIGHT_BROWN, YELLOW, VIOLET, BLACK]
 
     # Erstellen der Kugeln und Speichern in einer Liste
     balls = [Ball(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2, WHITE, 20)]
@@ -169,7 +169,7 @@ def main():
                         if ball.color == color:
                             if color == RED:
                                 color_name = "rot"
-                            elif color == GREEN or color == GREEN_2:
+                            elif color == GREEN:
                                 color_name = "grün"
                             elif color == BLUE:
                                 color_name = "blau"
@@ -179,7 +179,7 @@ def main():
                                 color_name = "hellbraun"
                             elif color == YELLOW:
                                 color_name = "gelb"
-                            elif color == PURPLE:
+                            elif color == VIOLET:
                                 color_name = "violett"
                             elif color == BLACK:
                                 color_name = "schwarz"
@@ -188,7 +188,7 @@ def main():
                     ball.visible = False
 
         # Hintergrund zeichnen
-        window.fill(GREEN)
+        window.fill(DARK_GREEN)
 
         # Taschen zeichnen
         for pocket in pockets:
