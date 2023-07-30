@@ -1,30 +1,36 @@
 import pygame
+import math
 
 class Ball:
-    def __init__(self, x, y, color, radius):
+    def __init__(self, x, y, color):
         self.x = x
         self.y = y
         self.color = color
-        self.radius = radius
+        self.radius = 20
         self.vel_x = 0
         self.vel_y = 0
         self.visible = True
 
-    def draw(self, screen):
+    def draw(self, window):
         if self.visible:
-            pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+            pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)
 
     def move(self):
-        if self.visible:
-            self.x += self.vel_x
-            self.y += self.vel_y
+        self.x += self.vel_x
+        self.y += self.vel_y
 
     def check_wall_collision(self, window_width, window_height):
-        if self.x - self.radius <= 0 or self.x + self.radius >= window_width:
-            self.vel_x = -self.vel_x
-        if self.y - self.radius <= 0 or self.y + self.radius >= window_height:
-            self.vel_y = -self.vel_y
+        if self.x - self.radius < 0 or self.x + self.radius > window_width:
+            self.vel_x *= -1
+        if self.y - self.radius < 0 or self.y + self.radius > window_height:
+            self.vel_y *= -1
 
-    def stop(self):
-        self.vel_x = 0
-        self.vel_y = 0
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y
+
+    def is_overlapping(self, other_ball):
+        dx = self.x - other_ball.x
+        dy = self.y - other_ball.y
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        return distance <= self.radius + other_ball.radius
