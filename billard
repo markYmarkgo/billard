@@ -3,7 +3,9 @@ import math
 from Ball import Ball
 from Cue import Cue
 from Pocket import Pocket
-from funky import arrange_balls_at_positions, reset_game, check_pocket_collision
+from funky import arrange_balls_at_positions, reset_game, check_pocket_collision, msgbox
+
+
 
 pygame.init()
 
@@ -33,9 +35,8 @@ def main():
 
     # Kugelfarben definieren
     ball_colors = [
-        WHITE, RED, GREEN,
-        BLUE, BROWN, LIGHT_BROWN,
-        BLACK,
+        WHITE, BLACK, RED,
+        GREEN, BLUE, BROWN, LIGHT_BROWN,
         YELLOW, VIOLET, RED,
         GREEN, BLUE, BROWN,
         LIGHT_BROWN, YELLOW, VIOLET,
@@ -45,24 +46,20 @@ def main():
     # Positionen der Kugeln, habe ich händisch eingegeben
     positions = [
         (WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2),
-
         (WINDOW_WIDTH * 3 // 4 - 50, WINDOW_HEIGHT // 2),
 
         (WINDOW_WIDTH * 3 // 4 - 10, WINDOW_HEIGHT // 2 - 20),
         (WINDOW_WIDTH * 3 // 4 - 10, WINDOW_HEIGHT // 2 + 25),
-
         (WINDOW_WIDTH * 3 // 4 + 30, WINDOW_HEIGHT // 2),
         (WINDOW_WIDTH * 3 // 4 + 30, WINDOW_HEIGHT // 2 + 45),
         (WINDOW_WIDTH * 3 // 4 + 30, WINDOW_HEIGHT // 2 - 45),
-
-        (WINDOW_WIDTH * 3// 4 + 70, WINDOW_HEIGHT // 2 + 70),
+        (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 + 70),
         (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 + 25),
         (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 - 20),
         (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 - 65),
-
         (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 + 90),
         (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 + 45),
-        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 ),
+        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2),
         (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 - 45),
         (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 - 90)
     ]
@@ -103,7 +100,7 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if cue.visible:
-                    cue_vel = cue.length * 0.1
+                    cue_vel = cue.length * 0.2
                     balls[0].vel_x = cue_vel * math.cos(cue.angle)
                     balls[0].vel_y = cue_vel * math.sin(cue.angle)
                     cue.visible = False
@@ -112,10 +109,19 @@ def main():
                 mouse_pos = pygame.mouse.get_pos()
                 if reset_button_x <= mouse_pos[0] <= reset_button_x + reset_button_width and \
                         reset_button_y <= mouse_pos[1] <= reset_button_y + reset_button_height:
-                    reset_game(balls[0], balls[1:], WINDOW_WIDTH, WINDOW_HEIGHT)
-                    cue.visible = True
-                    cue.x = balls[0].x
-                    cue.y = balls[0].y
+                    # Überprüfen, ob die schwarze Kugel mit anderen Kugeln überlappt
+                    overlapping = False
+                    for ball in balls[1:]:
+                        if balls[0].is_overlapping(ball):
+                            overlapping = True
+                            break
+
+                    # Wenn die schwarze Kugel nicht mit anderen Kugeln überlappt, dann reset
+                    if not overlapping:
+                        reset_game(balls[0], balls[1:], WINDOW_WIDTH, WINDOW_HEIGHT)
+                        cue.visible = True
+                        cue.x = balls[0].x
+                        cue.y = balls[0].y
 
         # Bewegung der Kugeln, wenn nicht gestoßen
         if not cue.visible:
@@ -170,14 +176,22 @@ def main():
                         phi2 = math.atan2(ball2.vel_y, ball2.vel_x)
 
                         # Berechnung der neuen Geschwindigkeiten nach der Kollision
-                        ball1.vel_x = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (2 * mass2 * v2 * math.cos(phi2 - angle))) / (
-                                mass1 + mass2)) * math.cos(angle) + v1 * math.sin(phi1 - angle) * math.cos(angle + math.pi / 2)
-                        ball1.vel_y = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (2 * mass2 * v2 * math.cos(phi2 - angle))) / (
-                                mass1 + mass2)) * math.sin(angle) + v1 * math.sin(phi1 - angle) * math.sin(angle + math.pi / 2)
-                        ball2.vel_x = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (2 * mass1 * v1 * math.cos(phi1 - angle))) / (
-                                mass1 + mass2)) * math.cos(angle) + v2 * math.sin(phi2 - angle) * math.cos(angle + math.pi / 2)
-                        ball2.vel_y = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (2 * mass1 * v1 * math.cos(phi1 - angle))) / (
-                                mass1 + mass2)) * math.sin(angle) + v2 * math.sin(phi2 - angle) * math.sin(angle + math.pi / 2)
+                        ball1.vel_x = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (
+                                2 * mass2 * v2 * math.cos(phi2 - angle))) / (
+                                               mass1 + mass2)) * math.cos(angle) + v1 * math.sin(
+                            phi1 - angle) * math.cos(angle + math.pi / 2)
+                        ball1.vel_y = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (
+                                2 * mass2 * v2 * math.cos(phi2 - angle))) / (
+                                               mass1 + mass2)) * math.sin(angle) + v1 * math.sin(
+                            phi1 - angle) * math.sin(angle + math.pi / 2)
+                        ball2.vel_x = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (
+                                2 * mass1 * v1 * math.cos(phi1 - angle))) / (
+                                               mass1 + mass2)) * math.cos(angle) + v2 * math.sin(
+                            phi2 - angle) * math.cos(angle + math.pi / 2)
+                        ball2.vel_y = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (
+                                2 * mass1 * v1 * math.cos(phi1 - angle))) / (
+                                               mass1 + mass2)) * math.sin(angle) + v2 * math.sin(
+                            phi2 - angle) * math.sin(angle + math.pi / 2)
 
         # Überprüfung, ob Kugeln in Taschen gelocht wurden
         for ball in balls:
@@ -214,8 +228,17 @@ def main():
                             elif color == BLACK:
                                 color_name = "schwarz"
                             break
-                    print(f"{color_name.capitalize()} Kugel gelocht!")
-                    ball.visible = False
+                    if ball.color == BLACK:
+                        msgbox("Leider verloren!", "Der schwarze Ball wurde versenkt.\nEs geht aber weiter.")
+                        ball.visible = False
+                        ball.x = WINDOW_WIDTH * 3 // 4 + 110
+                        ball.y = WINDOW_HEIGHT // 2
+                        ball.vel_x = 0
+                        ball.vel_y = 0
+                        ball.visible = True
+                    else:
+                        print(f"{color_name.capitalize()} Kugel gelocht!")
+                        ball.visible = False
 
         # Hintergrund zeichnen
         window.fill(DARK_GREEN)
