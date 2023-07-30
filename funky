@@ -1,18 +1,24 @@
 import math
 from Ball import Ball
-
-import math
+import ctypes
 
 def reset_game(white_ball, colored_balls, WINDOW_WIDTH, WINDOW_HEIGHT):
-    white_ball.x = WINDOW_WIDTH // 4
-    white_ball.y = WINDOW_HEIGHT // 2
+    white_ball.set_position(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2)
     white_ball.vel_x = 0
     white_ball.vel_y = 0
     white_ball.visible = True
 
+    # Anordnen der farbigen Kugeln in einer Dreiecksformation
+    dreieck_basis = 3  # Anzahl der Kugeln in der unteren Reihe des Dreiecks
+    dreieck_offset = 40  # Horizontaler Abstand zwischen den Kugeln im Dreieck
+    dreieck_hoehe = int(dreieck_offset * math.sqrt(3) / 2)  # Vertikaler Abstand zwischen den Reihen im Dreieck
+
     for i, ball in enumerate(colored_balls):
-        ball.x = WINDOW_WIDTH * 3 // 4
-        ball.y = WINDOW_HEIGHT * (i + 1) // (len(colored_balls) + 1)
+        reihe = i // dreieck_basis  # Aktuelle Reihe berechnen
+        spalte = i % dreieck_basis  # Aktuelle Spalte berechnen
+        ball_x = WINDOW_WIDTH * 3 // 4 + (spalte - (dreieck_basis - 1) / 2) * dreieck_offset
+        ball_y = WINDOW_HEIGHT // 2 + reihe * dreieck_hoehe
+        ball.set_position(ball_x, ball_y)
         ball.vel_x = 0
         ball.vel_y = 0
         ball.visible = True
@@ -34,4 +40,5 @@ def arrange_balls_at_positions(ball_colors, positions):
         colored_balls.append(Ball(pos[0], pos[1], color))
     return colored_balls
 
-
+def msgbox(title, text):
+    return ctypes.windll.user32.MessageBoxW(0, text, title, 1)
