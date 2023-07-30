@@ -5,21 +5,22 @@ class Cue:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.length = 10
-        self.maxLength = 400
-        self.angle = 0
-        self.visible = False
+        self.length = 100  # Anfangslänge des Queues
+        self.visible = True
 
-    def update(self):
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        dx = mouse_x - self.x
-        dy = mouse_y - self.y
-
-        self.angle = math.atan2(dy, dx)
-        self.length = min(math.sqrt(dx ** 2 + dy ** 2), self.maxLength)
+    def update(self, balls):
+        if self.visible:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            dx = mouse_x - self.x
+            dy = mouse_y - self.y
+            self.angle = math.atan2(dy, dx)
+            self.length = min(math.sqrt(dx**2 + dy**2), 200)  # Maximale Länge des Queues auf 200 begrenzen
 
     def draw(self, window):
         if self.visible:
-            end_x = self.x + self.length * math.cos(self.angle)
-            end_y = self.y + self.length * math.sin(self.angle)
-            pygame.draw.line(window, (255, 255, 255), (self.x, self.y), (end_x, end_y), 2)
+            pygame.draw.line(window, (255, 255, 255), (self.x, self.y), (self.x + self.length * math.cos(self.angle),
+                                                                       self.y + self.length * math.sin(self.angle)), 5)
+
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y
