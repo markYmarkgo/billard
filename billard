@@ -5,8 +5,6 @@ from Cue import Cue
 from Pocket import Pocket
 from funky import arrange_balls_at_positions, reset_game, check_pocket_collision, msgbox
 
-
-
 pygame.init()
 
 # Bildschirmabmessungen
@@ -14,7 +12,7 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
 WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
 # Farben
-WHITE = (255, 255, 255)
+WHITE = (250, 250, 250)
 DARK_GREEN = (0, 80, 0)  # Dunkleres Grün für das Spielfeld
 RED = (255, 0, 0)
 GREEN = (0, 200, 0)  # Hellere grüne Farbe für die Kugel
@@ -100,7 +98,9 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if cue.visible:
-                    cue_vel = cue.length * 0.2
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                    cue_length = math.sqrt((mouse_x - balls[0].x) ** 2 + (mouse_y - balls[0].y) ** 2)
+                    cue_vel = cue_length * 0.2
                     balls[0].vel_x = cue_vel * math.cos(cue.angle)
                     balls[0].vel_y = cue_vel * math.sin(cue.angle)
                     cue.visible = False
@@ -118,7 +118,7 @@ def main():
 
                     # Wenn die schwarze Kugel nicht mit anderen Kugeln überlappt, dann reset
                     if not overlapping:
-                        reset_game(balls[0], balls[1:], WINDOW_WIDTH, WINDOW_HEIGHT)
+                        reset_game(balls[0], balls[1:], ball_colors, positions, WINDOW_WIDTH, WINDOW_HEIGHT)
                         cue.visible = True
                         cue.x = balls[0].x
                         cue.y = balls[0].y
@@ -252,7 +252,7 @@ def main():
             ball.draw(window)
 
         # Queue zeichnen
-        cue.update()
+        cue.update(balls)
         cue.draw(window)
 
         # Reset-Button zeichnen
