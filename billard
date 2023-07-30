@@ -33,17 +33,38 @@ def main():
 
     # Kugelfarben definieren
     ball_colors = [
-        WHITE, RED, GREEN, BLUE, BROWN, LIGHT_BROWN, YELLOW, VIOLET,
-        RED, GREEN, BLUE, BROWN, LIGHT_BROWN, YELLOW, VIOLET, BLACK
+        WHITE, RED, GREEN,
+        BLUE, BROWN, LIGHT_BROWN,
+        BLACK,
+        YELLOW, VIOLET, RED,
+        GREEN, BLUE, BROWN,
+        LIGHT_BROWN, YELLOW, VIOLET,
+        DARK_GREEN, YELLOW
     ]
 
-    # Positionen der Kugeln
+    # Positionen der Kugeln, habe ich händisch eingegeben
     positions = [
         (WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2),
-        (WINDOW_WIDTH * 3.5 // 4, WINDOW_HEIGHT // 2 + 40),
-        (WINDOW_WIDTH * 3 // 4 + 40, WINDOW_HEIGHT // 2),
-        (WINDOW_WIDTH * 3 // 4 + 40, WINDOW_HEIGHT // 2 + 80),
-        # Füge hier die restlichen Positionen der Kugeln hinzu...
+
+        (WINDOW_WIDTH * 3 // 4 - 50, WINDOW_HEIGHT // 2),
+
+        (WINDOW_WIDTH * 3 // 4 - 10, WINDOW_HEIGHT // 2 - 20),
+        (WINDOW_WIDTH * 3 // 4 - 10, WINDOW_HEIGHT // 2 + 25),
+
+        (WINDOW_WIDTH * 3 // 4 + 30, WINDOW_HEIGHT // 2),
+        (WINDOW_WIDTH * 3 // 4 + 30, WINDOW_HEIGHT // 2 + 45),
+        (WINDOW_WIDTH * 3 // 4 + 30, WINDOW_HEIGHT // 2 - 45),
+
+        (WINDOW_WIDTH * 3// 4 + 70, WINDOW_HEIGHT // 2 + 70),
+        (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 + 25),
+        (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 - 20),
+        (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 - 65),
+
+        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 + 90),
+        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 + 45),
+        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 ),
+        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 - 45),
+        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 - 90)
     ]
 
     # Erstellen der Kugeln und Speichern in einer Liste
