@@ -2,7 +2,10 @@ import math
 from Ball import Ball
 import ctypes
 
-def reset_game(white_ball, colored_balls, WINDOW_WIDTH, WINDOW_HEIGHT):
+def reset_game(white_ball, colored_balls, ball_colors, positions, WINDOW_WIDTH, WINDOW_HEIGHT):
+    # Entfernen der weißen Kugel aus der Liste der farbigen Kugeln
+    colored_balls = [ball for ball in colored_balls if ball != white_ball]
+
     white_ball.set_position(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2)
     white_ball.vel_x = 0
     white_ball.vel_y = 0
@@ -37,7 +40,9 @@ def check_pocket_collision(ball, pockets):
 def arrange_balls_at_positions(ball_colors, positions):
     colored_balls = []
     for pos, color in zip(positions, ball_colors):
-        colored_balls.append(Ball(pos[0], pos[1], color))
+        # Ignoriere die weiße Kugel (Farbe Weiß) beim Neuarrangieren
+        if color != (255, 255, 255):  # RGB-Wert für Weiß
+            colored_balls.append(Ball(pos[0], pos[1], color))
     return colored_balls
 
 def msgbox(title, text):
