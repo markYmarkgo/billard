@@ -3,8 +3,9 @@ from Ball import Ball
 import ctypes
 
 def reset_game(white_ball, colored_balls, ball_colors, positions, WINDOW_WIDTH, WINDOW_HEIGHT):
-    # Entfernen der weißen Kugel aus der Liste der farbigen Kugeln
-    colored_balls = [ball for ball in colored_balls if ball != white_ball]
+    # Entfernen der weißen Kugel aus der Liste der farbigen Kugeln, falls sie vorhanden ist
+    if white_ball in colored_balls:
+        colored_balls.remove(white_ball)
 
     white_ball.set_position(WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2)
     white_ball.vel_x = 0
@@ -25,6 +26,7 @@ def reset_game(white_ball, colored_balls, ball_colors, positions, WINDOW_WIDTH, 
         ball.vel_x = 0
         ball.vel_y = 0
         ball.visible = True
+
 
 def check_pocket_collision(ball, pockets):
     for pocket_obj in pockets:
