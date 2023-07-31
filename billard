@@ -164,34 +164,7 @@ def main():
                     distance = math.sqrt(dx ** 2 + dy ** 2)
 
                     if distance <= ball1.radius + ball2.radius:
-                        # Berechnung der neuen Geschwindigkeiten nach der Kollision
-                        angle = math.atan2(dy, dx)
-                        mass1 = 1  # Masse der weißen Kugel
-                        mass2 = 2  # Masse der anderen Kugeln
-
-                        # Geschwindigkeitsvektoren der Kugeln
-                        v1 = math.sqrt(ball1.vel_x ** 2 + ball1.vel_y ** 2)
-                        v2 = math.sqrt(ball2.vel_x ** 2 + ball2.vel_y ** 2)
-                        phi1 = math.atan2(ball1.vel_y, ball1.vel_x)
-                        phi2 = math.atan2(ball2.vel_y, ball2.vel_x)
-
-                        # Berechnung der neuen Geschwindigkeiten nach der Kollision
-                        ball1.vel_x = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (
-                                2 * mass2 * v2 * math.cos(phi2 - angle))) / (
-                                               mass1 + mass2)) * math.cos(angle) + v1 * math.sin(
-                            phi1 - angle) * math.cos(angle + math.pi / 2)
-                        ball1.vel_y = ((v1 * math.cos(phi1 - angle) * (mass1 - mass2) + (
-                                2 * mass2 * v2 * math.cos(phi2 - angle))) / (
-                                               mass1 + mass2)) * math.sin(angle) + v1 * math.sin(
-                            phi1 - angle) * math.sin(angle + math.pi / 2)
-                        ball2.vel_x = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (
-                                2 * mass1 * v1 * math.cos(phi1 - angle))) / (
-                                               mass1 + mass2)) * math.cos(angle) + v2 * math.sin(
-                            phi2 - angle) * math.cos(angle + math.pi / 2)
-                        ball2.vel_y = ((v2 * math.cos(phi2 - angle) * (mass2 - mass1) + (
-                                2 * mass1 * v1 * math.cos(phi1 - angle))) / (
-                                               mass1 + mass2)) * math.sin(angle) + v2 * math.sin(
-                            phi2 - angle) * math.sin(angle + math.pi / 2)
+                        ball1.resolve_collision(ball2)
 
         # Überprüfung, ob Kugeln in Taschen gelocht wurden
         for ball in balls:
