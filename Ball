@@ -20,9 +20,18 @@ class Ball:
         self.y += self.vel_y
 
     def check_wall_collision(self, window_width, window_height):
-        if self.x - self.radius < 0 or self.x + self.radius > window_width:
+        if self.x - self.radius < 0:
+            self.x = self.radius
             self.vel_x *= -1
-        if self.y - self.radius < 0 or self.y + self.radius > window_height:
+        elif self.x + self.radius > window_width:
+            self.x = window_width - self.radius
+            self.vel_x *= -1
+
+        if self.y - self.radius < 0:
+            self.y = self.radius
+            self.vel_y *= -1
+        elif self.y + self.radius > window_height:
+            self.y = window_height - self.radius
             self.vel_y *= -1
 
     def set_position(self, x, y):
