@@ -1,6 +1,7 @@
 import math
-from Ball import Ball
 import ctypes
+
+from Ball import Ball
 
 def reset_game(white_ball, colored_balls, ball_colors, positions, WINDOW_WIDTH, WINDOW_HEIGHT):
     # Entfernen der weißen Kugel aus der Liste der farbigen Kugeln, falls sie vorhanden ist
