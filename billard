@@ -101,6 +101,7 @@ def main():
             if event.type == pygame.QUIT:
                 playing = False
 
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if cue.visible:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -134,7 +135,7 @@ def main():
                 ball.move()
                 ball.check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
 
-                # Dämpfung der Geschwindigkeit, wenn die Kugel nahezu gestoppt ist
+                # Dämpfung der Geschwindigkeit auf 0, wenn die Kugel extrem langsam ist
                 if abs(ball.vel_x) < 0.1 and abs(ball.vel_y) < 0.1:
                     ball.vel_x = 0
                     ball.vel_y = 0
