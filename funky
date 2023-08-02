@@ -33,6 +33,13 @@ def check_pocket_collision(ball, pockets):
 
 def arrange_balls_at_positions(ball_colors, positions):
     colored_balls = []
+    """
+        Wenn man auf das zip verzichtet und stattdessen die Schleife wie folgt schreibt:
+        for i in range(len(positions)):
+            pos = positions[i]
+            color = ball_colors[i]
+        würde das immer noch funktionieren und das gleiche Ergebnis erzielen wie mit der Verwendung von zip.
+    """
     for pos, color in zip(positions, ball_colors):
         # Ignoriere die weiße Kugel (Farbe Weiß) beim Neuarrangieren
         if color != (255, 255, 255):  # RGB-Wert für Weiß
