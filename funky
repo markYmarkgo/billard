@@ -42,17 +42,7 @@ def arrange_balls_at_positions(ball_colors, positions):
 def msgbox(title, text):
     return ctypes.windll.user32.MessageBoxW(0, text, title, 1)
 
-def gameStatus(ballColor, sunk_balls, ball_colors):
-    print("gameSTatus wird aufgerufen")
-"""    
-    global game_status
-    if ballColor == BLACK:
-        if len(sunk_balls) == len(ball_colors) - 2:  # -1 für die weiße Kugel, -1 für die schwarze Kugel
-            game_status = 1
-        else:
-            game_status = -1
-    else:
-        if ballColor not in sunk_balls:
-            sunk_balls.append(ballColor)
-            
-"""
+
+def gameStatus(ball):
+    if ball.color != (0, 0, 0):  # Überprüfen, ob es sich nicht um die schwarze Kugel handelt
+        return ball.color
