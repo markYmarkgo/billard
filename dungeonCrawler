@@ -13,16 +13,8 @@ class Individuum:
         print(f"{self.name} greift an {player.name} und verursacht {damage} Schaden.")
         return damage
 
-    def returnForrest(self):
-        while True:
-            try:
-                num = int(input("Bitte geben Sie eine Zahl zwischen 1 und 6 ein: "))
-                if 1 <= num <= 6:
-                    return num
-                else:
-                    print("Ungültige Eingabe. Bitte geben Sie eine Zahl zwischen 1 und 6 ein.")
-            except ValueError:
-                print("Ungültige Eingabe. Bitte geben Sie eine ganze Zahl ein.")
+    def wuerfel(self):
+        return random.randint(1, 6)
 
 
 # class abx extend cde
@@ -64,8 +56,7 @@ class Monster(Individuum):
             self.is_alive = False
             print(f"{self.name} wurde besiegt!")
 
-def roll_dice():
-    return random.randint(1, 6)
+
 
 def main():
     player_name = input("Bitte Ihren Namen eingeben: ")
@@ -90,12 +81,19 @@ def main():
             player.pick_up_item("Stock")
         elif choice == "2":
             print("Du suchst einen Weg aus dem Wald.")
-            user_number = player.returnForrest()  # Hier die Methode aufrufen
-            rolled_number = roll_dice()
-            if rolled_number == user_number:
-                print("Glückwunsch! Sie kommen aus dem Wald raus.")
-            else:
-                print("Leider kommst du noch nicht aus dem Wald raus.")
+            count = 0
+            while count < 3:
+                try:
+                    user_number = int(input("Bitte geben Sie eine Zahl zwischen 1 und 6 ein: "))
+                    rolled_number = player.wuerfel()
+                    if rolled_number == user_number:
+                        print("Glückwunsch! Sie kommen aus dem Wald raus.")
+                        break
+                    else:
+                        print("Leider kommst du noch nicht aus dem Wald raus.")
+                    count += 1
+                except ValueError:
+                    print("Ungültige Eingabe. Bitte geben Sie eine ganze Zahl ein.")
         elif choice == "3":
             if monster and monster.is_alive:  # Prüfe, ob es ein Monster gibt und ob es noch lebt
                 print(f"Punktestand - {player.player_name}: {player.health}, Monster: {monster.health}")
