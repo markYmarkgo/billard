@@ -81,7 +81,7 @@ def main():
             player.pick_up_item("Stock")
         elif choice == "2":
             print("Du suchst einen Weg aus dem Wald.")
-            break
+            break  # Beende die Schleife und das Spiel
         elif choice == "3":
             if monster and monster.is_alive:  # Prüfe, ob es ein Monster gibt und ob es noch lebt
                 print(f"Punktestand - {player.player_name}: {player.health}, Monster: {monster.health}")
@@ -106,9 +106,11 @@ def main():
                 print(f"Du hast das Monster {monster.name} besiegt!")
         elif choice == "5":
             player.over()
-            player("Sie verlassen das Spiel")
+            print("Sie verlassen das Spiel")
+            break  # Beende die Schleife und das Spiel
         else:
-            print("Ungültige Eingabe. Bitte wähle eine Option (1/2/3/4).")
+            print("Ungültige Eingabe. Bitte wähle eine Option (1/2/3/4/5).")
 
 if __name__ == "__main__":
     main()
+
