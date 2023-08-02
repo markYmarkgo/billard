@@ -208,7 +208,7 @@ def main():
 
 
                     sunk_balls.append(gameStatus(ball))
-                    print("Länge der sunk_balls", len(sunk_balls), sunk_balls)
+                    
                     if ball.color == BLACK:
                         if(len(sunk_balls) < 16):
                             msgbox("Leider verloren!", "Der schwarze Ball wurde versenkt.\nEs geht aber weiter.")
