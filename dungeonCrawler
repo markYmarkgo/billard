@@ -13,6 +13,9 @@ class Individuum:
         print(f"{self.name} greift an {player.name} und verursacht {damage} Schaden.")
         return damage
 
+    def over(self):
+        self.is_alive = False
+
 # class abx extend cde
 class DungeonCrawler(Individuum):
     def __init__(self, name):
@@ -70,8 +73,9 @@ def main():
         print("2. Einen Weg aus dem Wald suchen")
         print("3. Hilfe aufrufen")
         print("4. Mit Monster kämpfen")
+        print("5. Exit")
 
-        choice = input("Bitte eine Auswahl treffen (1/2/3/4): ")
+        choice = input("Bitte eine Auswahl treffen (1/2/3/4/5): ")
 
         if choice == "1":
             player.pick_up_item("Stock")
@@ -100,6 +104,9 @@ def main():
                 print("Du wurdest von dem Monster besiegt!")
             else:
                 print(f"Du hast das Monster {monster.name} besiegt!")
+        elif choice == "5":
+            player.over()
+            player("Sie verlassen das Spiel")
         else:
             print("Ungültige Eingabe. Bitte wähle eine Option (1/2/3/4).")
 
