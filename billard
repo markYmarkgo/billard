@@ -252,6 +252,7 @@ def main():
 
     pygame.quit()
 
-
+# Der Block wird nur ausgeführt, wenn das Skript direkt ausgeführt wird.
+# aber nicht ausführen, wenn es als Modul in einem anderen Skript importiert wird.
 if __name__ == "__main__":
     main()
