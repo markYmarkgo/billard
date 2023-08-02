@@ -1,11 +1,15 @@
 import pygame
 import math
-from Ball import Ball
+import sys
+
 from Cue import Cue
 from Pocket import Pocket
-from funky import arrange_balls_at_positions, reset_game, check_pocket_collision, msgbox
+from funky import arrange_balls_at_positions, reset_game, check_pocket_collision, msgbox, gameStatus
 
 pygame.init()
+
+# Liste zum Speichern der eingespielten Kugeln
+sunk_balls = []
 
 # Bildschirmabmessungen
 WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
@@ -201,16 +205,25 @@ def main():
                             elif color == BLACK:
                                 color_name = "schwarz"
                             break
+
+
+                    sunk_balls.append(gameStatus(ball))
+                    print("Länge der sunk_balls", len(sunk_balls), sunk_balls)
                     if ball.color == BLACK:
-                        msgbox("Leider verloren!", "Der schwarze Ball wurde versenkt.\nEs geht aber weiter.")
-                        ball.visible = False
-                        ball.x = WINDOW_WIDTH * 3 // 4 + 110
-                        ball.y = WINDOW_HEIGHT // 2
-                        ball.vel_x = 0
-                        ball.vel_y = 0
-                        ball.visible = True
+                        if(len(sunk_balls) < 16):
+                            msgbox("Leider verloren!", "Der schwarze Ball wurde versenkt.\nEs geht aber weiter.")
+                            ball.visible = False
+                            ball.x = WINDOW_WIDTH * 3 // 4 + 110
+                            ball.y = WINDOW_HEIGHT // 2
+                            ball.vel_x = 0
+                            ball.vel_y = 0
+                            ball.visible = True
+                        else:
+                            msgbox("Sie haben gewonnen!", "Herzlichen  Glückwunsch.\nSie haben gewonnen.")
+                            sys.exit()
                     else:
                         print(f"{color_name.capitalize()} Kugel gelocht!")
+                        msgbox("Gelocht", f"{color_name.capitalize()} Kugel gelocht!")
                         ball.visible = False
 
         # Hintergrund zeichnen
