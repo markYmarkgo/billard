@@ -88,6 +88,7 @@ def main():
                     rolled_number = player.wuerfel()
                     if rolled_number == user_number:
                         print("Glückwunsch! Sie kommen aus dem Wald raus.")
+                        player.is_alive = False
                         break
                     else:
                         print("Leider kommst du noch nicht aus dem Wald raus.")
