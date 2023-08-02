@@ -189,21 +189,21 @@ def main():
                     for color in ball_colors:
                         if ball.color == color:
                             if color == RED:
-                                color_name = "rot"
+                                color_name = "rote"
                             elif color == GREEN:
-                                color_name = "grün"
+                                color_name = "grüne"
                             elif color == BLUE:
-                                color_name = "blau"
+                                color_name = "blaue"
                             elif color == BROWN:
-                                color_name = "braun"
+                                color_name = "braune"
                             elif color == LIGHT_BROWN:
-                                color_name = "hellbraun"
+                                color_name = "hellbraune"
                             elif color == YELLOW:
-                                color_name = "gelb"
+                                color_name = "gelbe"
                             elif color == VIOLET:
-                                color_name = "violett"
+                                color_name = "violette"
                             elif color == BLACK:
-                                color_name = "schwarz"
+                                color_name = "schwarze"
                             break
 
 
