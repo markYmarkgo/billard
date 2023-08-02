@@ -13,8 +13,6 @@ class Individuum:
         print(f"{self.name} greift an {player.name} und verursacht {damage} Schaden.")
         return damage
 
-    def over(self):
-        self.is_alive = False
 
 # class abx extend cde
 class DungeonCrawler(Individuum):
@@ -71,7 +69,7 @@ def main():
         print("Was möchtest du jetzt tun?")
         print("1. Eine Waffe (Stock) finden")
         print("2. Einen Weg aus dem Wald suchen")
-        print("3. Hilfe aufrufen")
+        print("3. Punktestand anzeigen")
         print("4. Mit Monster kämpfen")
         print("5. Exit")
 
@@ -86,7 +84,8 @@ def main():
             if monster and monster.is_alive:  # Prüfe, ob es ein Monster gibt und ob es noch lebt
                 print(f"Punktestand - {player.player_name}: {player.health}, Monster: {monster.health}")
             else:
-                print("Es gibt derzeit kein Monster.")
+                print("Es gibt derzeit kein Monster. Ein Monster wird erstellt")
+                monster = Monster("Dagobert")
         elif choice == "4":
             if not monster or not monster.is_alive:
                 monster = Monster("Dagobert")
@@ -105,7 +104,6 @@ def main():
             else:
                 print(f"Du hast das Monster {monster.name} besiegt!")
         elif choice == "5":
-            player.over()
             print("Sie verlassen das Spiel")
             break  # Beende die Schleife und das Spiel
         else:
