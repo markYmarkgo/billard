@@ -73,6 +73,7 @@ def main():
     cue = Cue(balls[0].x, balls[0].y)
 
     # Taschen (Fangkörbe) erstellen
+    # brauche pocket1 und pocket2 für den RESET Button
     pocket1 = Pocket(30, 30, BLACK, 30)
     pocket2 = Pocket(WINDOW_WIDTH - 30, 30, BLACK, 30)
     pockets = [
@@ -206,11 +207,10 @@ def main():
                                 color_name = "schwarze"
                             break
 
-
                     sunk_balls.append(gameStatus(ball))
-                    
+
                     if ball.color == BLACK:
-                        if(len(sunk_balls) < 16):
+                        if (len(sunk_balls) < 16):
                             msgbox("Leider verloren!", "Der schwarze Ball wurde versenkt.\nEs geht aber weiter.")
                             ball.visible = False
                             ball.x = WINDOW_WIDTH * 3 // 4 + 110
@@ -251,6 +251,7 @@ def main():
         clock.tick(60)
 
     pygame.quit()
+
 
 # Der Block wird nur ausgeführt, wenn das Skript direkt ausgeführt wird.
 # aber nicht ausführen, wenn es als Modul in einem anderen Skript importiert wird.
