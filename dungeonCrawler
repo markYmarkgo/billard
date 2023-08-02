@@ -1,0 +1,107 @@
+import random
+
+class Individuum:
+    def __init__(self, name):
+        self.name = name
+        self.health = random.randint(80, 120)
+        self.attack_power = 20
+        self.inventory = []
+        self.is_alive = True
+
+    def attack(self, player):
+        damage = random.randint(1, self.attack_power)
+        print(f"{self.name} greift an {player.name} und verursacht {damage} Schaden.")
+        return damage
+
+# class abx extend cde
+class DungeonCrawler(Individuum):
+    def __init__(self, name):
+        super().__init__(name)
+        self.player_name = name  # Speichere den Namen des Spielers in der DungeonCrawler-Klasse
+
+    def attack(self, monster):
+        damage = random.randint(1, self.attack_power)
+        print(f"{self.player_name} greift {monster.name} an und verursacht {damage} Schaden.")
+        return damage
+
+    #obj.keineParameter()
+    def keineParameter(self):
+        print("Keine Parameter")
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.is_alive = False
+            print(f"{self.player_name} wurde besiegt!")
+
+    def heal(self):
+        heal_amount = random.randint(10, 20)
+        self.health += heal_amount
+        print(f"{self.player_name} hat sich um weitere {heal_amount} Lebenspunkte gestärkt.")
+
+    def pick_up_item(self, item):
+        self.inventory.append(item)
+        print(f"{self.player_name} picked up {item}.")
+        if item == "Stock":
+            self.health += random.randint(10, 20)
+            print(f"Du hast einen Stock gefunden und Deine Gesundheit ist auf {self.health} gestiegen.")
+
+class Monster(Individuum):
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.is_alive = False
+            print(f"{self.name} wurde besiegt!")
+
+
+
+
+def main():
+    player_name = input("Bitte Ihren Namen eingeben: ")
+    player = DungeonCrawler(player_name)
+    monster = None  # Initialisierung von monster außerhalb der Schleife
+
+    print(f"Guten Morgen {player.player_name}.")
+    print("Du befindest dich im tiefen Wald.")
+    print("Scheinbar wurdest du ausgeraubt und hier abgelegt.")
+
+    while player.is_alive:
+        print("Was möchtest du jetzt tun?")
+        print("1. Eine Waffe (Stock) finden")
+        print("2. Einen Weg aus dem Wald suchen")
+        print("3. Hilfe aufrufen")
+        print("4. Mit Monster kämpfen")
+
+        choice = input("Bitte eine Auswahl treffen (1/2/3/4): ")
+
+        if choice == "1":
+            player.pick_up_item("Stock")
+        elif choice == "2":
+            print("Du suchst einen Weg aus dem Wald.")
+            break
+        elif choice == "3":
+            if monster and monster.is_alive:  # Prüfe, ob es ein Monster gibt und ob es noch lebt
+                print(f"Punktestand - {player.player_name}: {player.health}, Monster: {monster.health}")
+            else:
+                print("Es gibt derzeit kein Monster.")
+        elif choice == "4":
+            if not monster or not monster.is_alive:
+                monster = Monster("Dagobert")
+                print(f"Ein {monster.name} mit Namen {monster.health} ist aufgetaucht!")
+
+            while monster.is_alive and player.is_alive:
+                player_damage = player.attack(monster)
+                monster.take_damage(player_damage)
+
+                if monster.is_alive:
+                    monster_damage = monster.attack(player)
+                    player.take_damage(monster_damage)
+
+            if not player.is_alive:
+                print("Du wurdest von dem Monster besiegt!")
+            else:
+                print(f"Du hast das Monster {monster.name} besiegt!")
+        else:
+            print("Ungültige Eingabe. Bitte wähle eine Option (1/2/3/4).")
+
+if __name__ == "__main__":
+    main()
