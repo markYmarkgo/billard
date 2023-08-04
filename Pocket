@@ -11,5 +11,5 @@ class Pocket:
         self.radius = radius
 
     # Pocket wird gezeichnet
-    def draw(self, window):
+    def drawPocket(self, window):
         pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)
