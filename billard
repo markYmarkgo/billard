@@ -2,9 +2,9 @@ import pygame
 import math
 import sys
 
-from Cue import Cue
+from Queue import Queue 
 from Pocket import Pocket
-from funky import arrange_balls_at_positions, reset_game, check_pocket_collision, msgbox, gameStatus
+from funky import * #arrange_balls_at_positions, reset_game, check_pocket_collision, msgbox, gameStatus
 
 pygame.init()
 
@@ -15,7 +15,7 @@ sunk_balls = []
 WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
 WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
-# Farben
+# Farben definieren
 WHITE = (250, 250, 250)
 DARK_GREEN = (0, 80, 0)  # Dunkleres Grün für das Spielfeld
 RED = (255, 0, 0)
@@ -27,15 +27,15 @@ YELLOW = (255, 255, 0)
 VIOLET = (128, 0, 128)
 BLACK = (0, 0, 0)
 
-# Initialisierung des Fensters
+# Initialisierung des Fensters, pygame unterstützt da
 window = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Billard")
 
-
+# das ist die Hauptfunktion
 def main():
     clock = pygame.time.Clock()
 
-    # Kugelfarben definieren
+    # definierte Kugelfarben in einer Liste speichert
     ball_colors = [
         WHITE, BLACK, RED,
         GREEN, BLUE, BROWN, LIGHT_BROWN,
@@ -45,7 +45,8 @@ def main():
         DARK_GREEN, YELLOW
     ]
 
-    # Positionen der Kugeln, habe ich händisch eingegeben
+    # Positionen der Kugeln, habe ich händisch eingegeben,
+    # Kugeln sollen in einem Dreieck angelegt werden
     positions = [
         (WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2),
         (WINDOW_WIDTH * 3 // 4 - 50, WINDOW_HEIGHT // 2),
@@ -69,8 +70,10 @@ def main():
     # Erstellen der Kugeln und Speichern in einer Liste
     balls = arrange_balls_at_positions(ball_colors, positions)
 
-    # Erstellen des Queues
-    cue = Cue(balls[0].x, balls[0].y)
+    # Erstellen des Queues, die weiße Kugel ist als erstes gespeichert in
+    # balls[0]. Man kann das Queue an jede andere Kugel anbringen aber
+    # gespielt wird mit der weißen Kugel
+    queue = Queue(balls[0].x, balls[0].y)
 
     # Taschen (Fangkörbe) erstellen
     # brauche pocket1 und pocket2 für den RESET Button
@@ -90,11 +93,13 @@ def main():
     reset_button_width = 100
     reset_button_height = 30
 
-    cue.visible = True
+    queue.visible = True
 
-    # Dämpfungsfaktor für das Stoppen der Kugeln
+    # Dämpfungsfaktor für das Stoppen der Kugeln. Wenn >= 1
+    # werden Kugeln nicht gestopt oder sogar beschleunigt
     damping = 0.95
 
+    # das Spiel wird gestartet
     playing = True
     while playing:
         for event in pygame.event.get():
@@ -103,13 +108,14 @@ def main():
 
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if cue.visible:
+                # Queue wird benutzt
+                if queue.visible:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     cue_length = math.sqrt((mouse_x - balls[0].x) ** 2 + (mouse_y - balls[0].y) ** 2)
                     cue_vel = cue_length * 0.2
-                    balls[0].vel_x = cue_vel * math.cos(cue.angle)
-                    balls[0].vel_y = cue_vel * math.sin(cue.angle)
-                    cue.visible = False
+                    balls[0].vel_x = cue_vel * math.cos(queue.angle)
+                    balls[0].vel_y = cue_vel * math.sin(queue.angle)
+                    queue.visible = False
 
                 # Überprüfen, ob der Reset-Button angeklickt wurde
                 mouse_pos = pygame.mouse.get_pos()
@@ -125,12 +131,12 @@ def main():
                     # Wenn die schwarze Kugel nicht mit anderen Kugeln überlappt, dann reset
                     if not overlapping:
                         reset_game(balls[0], balls[1:], ball_colors, positions, WINDOW_WIDTH, WINDOW_HEIGHT)
-                        cue.visible = True
-                        cue.x = balls[0].x
-                        cue.y = balls[0].y
+                        queue.visible = True
+                        queue.x = balls[0].x
+                        queue.y = balls[0].y
 
         # Bewegung der Kugeln, wenn nicht gestoßen
-        if not cue.visible:
+        if not queue.visible:
             for ball in balls[1:]:
                 ball.move()
                 ball.check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
@@ -151,16 +157,16 @@ def main():
         if abs(balls[0].vel_x) < 0.1 and abs(balls[0].vel_y) < 0.1:
             balls[0].vel_x = 0
             balls[0].vel_y = 0
-            if not cue.visible:
-                cue.visible = True
-                cue.x = balls[0].x
-                cue.y = balls[0].y
+            if not queue.visible:
+                queue.visible = True
+                queue.x = balls[0].x
+                queue.y = balls[0].y
         else:
             balls[0].vel_x *= damping
             balls[0].vel_y *= damping
 
         # Kollisionserkennung zwischen den Kugeln, wenn nicht gestoßen
-        if not cue.visible:
+        if not queue.visible:
             for i in range(len(balls)):
                 for j in range(i + 1, len(balls)):
                     ball1 = balls[i]
@@ -176,17 +182,19 @@ def main():
         for ball in balls:
             pocket_collision = check_pocket_collision(ball, pockets)
             if ball.visible and pocket_collision:
+                #1. if-statement, wenn weiße Kugel eingespielt wurde
                 if ball == balls[0]:
                     print("Weiße Kugel gelocht!")
                     ball.vel_x = 0
                     ball.vel_y = 0
                     ball.x = WINDOW_WIDTH // 4
                     ball.y = WINDOW_HEIGHT // 2
-                    if not cue.visible:
-                        cue.visible = True
-                        cue.x = ball.x
-                        cue.y = ball.y
+                    if not queue.visible:
+                        queue.visible = True
+                        queue.x = ball.x
+                        queue.y = ball.y
                 else:
+                    # else kümmert sich um alle anderen Kugeln, die eingespielt wurden
                     color_name = ""
                     for color in ball_colors:
                         if ball.color == color:
@@ -208,11 +216,15 @@ def main():
                                 color_name = "schwarze"
                             break
 
+                    # Die eingespielten Kugeln werden in eine Liste eingetragen
                     sunk_balls.append(gameStatus(ball))
 
+                    # prüfen welche Kugeln eingespiet wurden;
+                    # schwarze Kugel soll als letztes eingespielt werden
                     if ball.color == BLACK:
                         if (len(sunk_balls) < 16):
-                            msgbox("Leider verloren!", "Der schwarze Ball wurde versenkt.\nEs geht aber weiter.")
+                            msgbox("Leider verloren!", "Der schwarze Kugel wurde versenkt.\nEs geht aber weiter.")
+                            #schwarze Kugel wieder ins Spiel bringen
                             ball.visible = False
                             ball.x = WINDOW_WIDTH * 3 // 4 + 110
                             ball.y = WINDOW_HEIGHT // 2
@@ -221,10 +233,12 @@ def main():
                             ball.visible = True
                         else:
                             msgbox("Sie haben gewonnen!", "Herzlichen  Glückwunsch.\nSie haben gewonnen.")
+                            #Programm verlassen
                             sys.exit()
                     else:
                         print(f"{color_name.capitalize()} Kugel gelocht!")
                         msgbox("Gelocht", f"{color_name.capitalize()} Kugel gelocht!")
+                        # eingespielte Kugel unsichtbar machen
                         ball.visible = False
 
         # Hintergrund zeichnen
@@ -239,8 +253,8 @@ def main():
             ball.draw(window)
 
         # Queue zeichnen
-        cue.update(balls)
-        cue.draw(window)
+        queue.update()
+        queue.draw(window)
 
         # Reset-Button zeichnen
         pygame.draw.rect(window, RED, (reset_button_x, reset_button_y, reset_button_width, reset_button_height))
