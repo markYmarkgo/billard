@@ -2,7 +2,7 @@ import pygame
 import math
 import sys
 
-from Queue import Queue 
+from Queue import Queue
 from Pocket import Pocket
 from funky import * #arrange_balls_at_positions, reset_game, check_pocket_collision, msgbox, gameStatus
 
@@ -106,10 +106,10 @@ def main():
             if event.type == pygame.QUIT:
                 playing = False
 
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Queue wird benutzt
                 if queue.visible:
+                    print("Queue ist sichtbar")
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     cue_length = math.sqrt((mouse_x - balls[0].x) ** 2 + (mouse_y - balls[0].y) ** 2)
                     cue_vel = cue_length * 0.2
@@ -142,6 +142,8 @@ def main():
                 ball.check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
 
                 # Dämpfung der Geschwindigkeit auf 0, wenn die Kugel extrem langsam ist
+                # abs liefert den Absolutwert. wenn balls[0].vel_x den Wert -5 hat,
+                # dann wird abs(balls[0].vel_x) den Wert 5 liefern
                 if abs(ball.vel_x) < 0.1 and abs(ball.vel_y) < 0.1:
                     ball.vel_x = 0
                     ball.vel_y = 0
@@ -154,6 +156,8 @@ def main():
         balls[0].check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
 
         # Dämpfung der Geschwindigkeit der weißen Kugel, wenn sie nahezu gestoppt ist
+        # abs liefert den Absolutwert. wenn balls[0].vel_x den Wert -5 hat,
+        # dann wird abs(balls[0].vel_x) den Wert 5 liefern
         if abs(balls[0].vel_x) < 0.1 and abs(balls[0].vel_y) < 0.1:
             balls[0].vel_x = 0
             balls[0].vel_y = 0
@@ -165,7 +169,8 @@ def main():
             balls[0].vel_x *= damping
             balls[0].vel_y *= damping
 
-        # Kollisionserkennung zwischen den Kugeln, wenn nicht gestoßen
+        # Kollisionserkennung zwischen den Kugeln
+        # Solange Kugeln rollen wird das Queue nicht angezeigt
         if not queue.visible:
             for i in range(len(balls)):
                 for j in range(i + 1, len(balls)):
@@ -173,6 +178,7 @@ def main():
                     ball2 = balls[j]
                     dx = ball1.x - ball2.x
                     dy = ball1.y - ball2.y
+                    #Pythagoras
                     distance = math.sqrt(dx ** 2 + dy ** 2)
 
                     if distance <= ball1.radius + ball2.radius:
@@ -184,59 +190,27 @@ def main():
             if ball.visible and pocket_collision:
                 #1. if-statement, wenn weiße Kugel eingespielt wurde
                 if ball == balls[0]:
-                    print("Weiße Kugel gelocht!")
-                    ball.vel_x = 0
-                    ball.vel_y = 0
-                    ball.x = WINDOW_WIDTH // 4
-                    ball.y = WINDOW_HEIGHT // 2
-                    if not queue.visible:
-                        queue.visible = True
-                        queue.x = ball.x
-                        queue.y = ball.y
+                    setWhiteBall(WINDOW_WIDTH, WINDOW_HEIGHT, ball, queue)
                 else:
                     # else kümmert sich um alle anderen Kugeln, die eingespielt wurden
-                    color_name = ""
-                    for color in ball_colors:
-                        if ball.color == color:
-                            if color == RED:
-                                color_name = "rote"
-                            elif color == GREEN:
-                                color_name = "grüne"
-                            elif color == BLUE:
-                                color_name = "blaue"
-                            elif color == BROWN:
-                                color_name = "braune"
-                            elif color == LIGHT_BROWN:
-                                color_name = "hellbraune"
-                            elif color == YELLOW:
-                                color_name = "gelbe"
-                            elif color == VIOLET:
-                                color_name = "violette"
-                            elif color == BLACK:
-                                color_name = "schwarze"
-                            break
+                    # prüfen welche Kugeln eingespiet wurden;
+                    # Variable color_name wird benötigt um die Kugelfarbe bei der Ausgabe anzugeben
+                    color_name = setBallcolor(ball, ball_colors)
 
                     # Die eingespielten Kugeln werden in eine Liste eingetragen
                     sunk_balls.append(gameStatus(ball))
 
-                    # prüfen welche Kugeln eingespiet wurden;
                     # schwarze Kugel soll als letztes eingespielt werden
                     if ball.color == BLACK:
                         if (len(sunk_balls) < 16):
                             msgbox("Leider verloren!", "Der schwarze Kugel wurde versenkt.\nEs geht aber weiter.")
                             #schwarze Kugel wieder ins Spiel bringen
-                            ball.visible = False
-                            ball.x = WINDOW_WIDTH * 3 // 4 + 110
-                            ball.y = WINDOW_HEIGHT // 2
-                            ball.vel_x = 0
-                            ball.vel_y = 0
-                            ball.visible = True
+                            setBlackBall(WINDOW_WIDTH, WINDOW_HEIGHT, ball)
                         else:
                             msgbox("Sie haben gewonnen!", "Herzlichen  Glückwunsch.\nSie haben gewonnen.")
                             #Programm verlassen
                             sys.exit()
                     else:
-                        print(f"{color_name.capitalize()} Kugel gelocht!")
                         msgbox("Gelocht", f"{color_name.capitalize()} Kugel gelocht!")
                         # eingespielte Kugel unsichtbar machen
                         ball.visible = False
@@ -246,20 +220,21 @@ def main():
 
         # Taschen zeichnen
         for pocket in pockets:
-            pocket.draw(window)
+            pocket.drawPocket(window)
 
         # Kugeln zeichnen
         for ball in balls:
-            ball.draw(window)
+            ball.drawBall(window)
 
         # Queue zeichnen
-        queue.update()
-        queue.draw(window)
+        queue.createQueue()
+        queue.drawQue(window)
 
         # Reset-Button zeichnen
         pygame.draw.rect(window, RED, (reset_button_x, reset_button_y, reset_button_width, reset_button_height))
         font = pygame.font.SysFont(None, 25)
         text = font.render("RESET", True, WHITE)
+        # zeichnet den Text im RESET Button
         window.blit(text, (reset_button_x + 25, reset_button_y + 8))
 
         pygame.display.update()
