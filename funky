@@ -2,7 +2,11 @@ import math
 import ctypes
 from Kugel import Kugel
 
-# Spiel wieder neu starten, die Kugeln sollen wieder in einem
+# Import um die Farbkonstanten einzubeziehen
+from billard import RED, GREEN, BLUE, BROWN, LIGHT_BROWN, YELLOW, VIOLET, BLACK
+
+
+# Spiel neu starten, die farbigen Kugeln sollen in einem
 # Dreieck angeordnet werden
 def reset_game(white_ball, colored_balls, ball_colors, positions, WINDOW_WIDTH, WINDOW_HEIGHT):
     # Entfernen der weißen Kugel aus der Liste der farbigen Kugeln, falls sie vorhanden ist
@@ -58,3 +62,48 @@ def msgbox(title, text):
 def gameStatus(ball):
     if ball.color != (0, 0, 0):  # Überprüfen, ob es sich nicht um die schwarze Kugel handelt
         return ball.color
+
+# setzt die schwarze Kugel in Postion
+def setBlackBall(WINDOW_WIDTH, WINDOW_HEIGHT, ball):
+    ball.visible = False
+    ball.x = WINDOW_WIDTH * 3 // 4 + 110
+    ball.y = WINDOW_HEIGHT // 2
+    ball.vel_x = 0
+    ball.vel_y = 0
+    ball.visible = True
+
+# setzt die weiße Kugel in Postion
+def setWhiteBall(WINDOW_WIDTH, WINDOW_HEIGHT, ball, queue):
+    ball.vel_x = 0
+    ball.vel_y = 0
+    ball.x = WINDOW_WIDTH // 4
+    ball.y = WINDOW_HEIGHT // 2
+    if not queue.visible:
+        queue.visible = True
+        queue.x = ball.x
+        queue.y = ball.y
+
+# setzt Kugelfarbe
+def setBallcolor(ball, ball_colors):
+    color_name = "standard"
+    for color in ball_colors:
+        if ball.color == color:  # Compare the color tuples directly
+            if color == RED:
+                color_name = "rote"
+            elif color == GREEN:
+                color_name = "grüne"
+            elif color == BLUE:
+                color_name = "blaue"
+            elif color == BROWN:
+                color_name = "braune"
+            elif color == LIGHT_BROWN:
+                color_name = "hellbraune"
+            elif color == YELLOW:
+                color_name = "gelbe"
+            elif color == VIOLET:
+                color_name = "violette"
+            elif color == BLACK:
+                color_name = "schwarze"
+            break
+
+    return color_name
