@@ -14,7 +14,7 @@ class Kugel:
         self.visible = True
 
     # Kugel wird gezeichnet
-    def draw(self, window):
+    def drawBall(self, window):
         if self.visible:
             pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)
 
@@ -56,6 +56,7 @@ class Kugel:
     def resolve_collision(self, other_ball):
         dx = self.x - other_ball.x
         dy = self.y - other_ball.y
+        # Pythagoras
         distance = math.sqrt(dx ** 2 + dy ** 2)
 
         # Berechnung der Überlappung
