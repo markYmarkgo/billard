@@ -10,8 +10,8 @@ class Queue:
         self.length = 100  # Anfangslänge des Queues
         self.visible = True
 
-    # Legt die Daten für das Queue zusammen
-    def update(self):
+    # erstellt die Daten für das Queue entsprechend der Mausposition zusammen
+    def createQueue(self):
         if self.visible:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             dx = mouse_x - self.x
@@ -20,7 +20,7 @@ class Queue:
             self.length = min(math.sqrt(dx**2 + dy**2), 300)  # Maximale Länge des Queues auf 300 begrenzen
 
     # zeichnet das Queue
-    def draw(self, window):
+    def drawQue(self, window):
         if self.visible:
             # mit 8 wird die Quebreite festgelegt
             pygame.draw.line(
