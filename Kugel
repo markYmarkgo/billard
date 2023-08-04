@@ -1,7 +1,9 @@
 import pygame
 import math
 
-class Ball:
+# die Class Kugel erzeugt die Kugeln
+class Kugel:
+    #ensprechend der Kugel werden die Werte im Konstruktor gesetzt
     def __init__(self, x, y, color):
         self.x = x
         self.y = y
@@ -11,14 +13,17 @@ class Ball:
         self.vel_y = 0
         self.visible = True
 
+    # Kugel wird gezeichnet
     def draw(self, window):
         if self.visible:
             pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)
 
+    # Kugel wird x,y mäßig bewegt
     def move(self):
         self.x += self.vel_x
         self.y += self.vel_y
 
+    # Kollisionen werden berechnet & die Geschwindigkeit entspr. angepasst
     def check_wall_collision(self, window_width, window_height):
         if self.x - self.radius < 0:
             self.x = self.radius
@@ -34,16 +39,20 @@ class Ball:
             self.y = window_height - self.radius
             self.vel_y *= -1
 
+    # Kugelposition entsprechen x,y setzen
     def set_position(self, x, y):
         self.x = x
         self.y = y
 
+    # Damit schwarze Kugeln nicht überlappt, wenn sie wieder eingefügt wird
     def is_overlapping(self, other_ball):
         dx = self.x - other_ball.x
         dy = self.y - other_ball.y
         distance = math.sqrt(dx ** 2 + dy ** 2)
         return distance <= self.radius + other_ball.radius
 
+    # berechnet, wenn Kugeln aneinander stoßen, Kugeln werden
+    # auch verschoben, um so eine Überlappung zu vermeiden
     def resolve_collision(self, other_ball):
         dx = self.x - other_ball.x
         dy = self.y - other_ball.y
