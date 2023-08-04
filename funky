@@ -1,8 +1,9 @@
 import math
 import ctypes
-from Ball import Ball
+from Kugel import Kugel
 
-
+# Spiel wieder neu starten, die Kugeln sollen wieder in einem
+# Dreieck angeordnet werden
 def reset_game(white_ball, colored_balls, ball_colors, positions, WINDOW_WIDTH, WINDOW_HEIGHT):
     # Entfernen der weißen Kugel aus der Liste der farbigen Kugeln, falls sie vorhanden ist
     if white_ball in colored_balls:
@@ -20,6 +21,7 @@ def reset_game(white_ball, colored_balls, ball_colors, positions, WINDOW_WIDTH, 
         ball.vel_y = 0
         ball.visible = True
 
+# prüft ob Kugel eingespielt wurde
 def check_pocket_collision(ball, pockets):
     for pocket_obj in pockets:
         dx = ball.x - pocket_obj.x
@@ -31,6 +33,7 @@ def check_pocket_collision(ball, pockets):
 
     return False
 
+# Erstellen der Kugeln
 def arrange_balls_at_positions(ball_colors, positions):
     colored_balls = []
     """
@@ -43,13 +46,15 @@ def arrange_balls_at_positions(ball_colors, positions):
     for pos, color in zip(positions, ball_colors):
         # Ignoriere die weiße Kugel (Farbe Weiß) beim Neuarrangieren
         if color != (255, 255, 255):  # RGB-Wert für Weiß
-            colored_balls.append(Ball(pos[0], pos[1], color))
+            colored_balls.append(Kugel(pos[0], pos[1], color))
     return colored_balls
 
+# für Text Ausgaben, es wird eine msgbox erzeugt
 def msgbox(title, text):
     return ctypes.windll.user32.MessageBoxW(0, text, title, 1)
 
-
+# wird für das Speichern der eingespielten Kugeln benötigt
+# die schwarze Kugel wird dabei nicht registriert
 def gameStatus(ball):
     if ball.color != (0, 0, 0):  # Überprüfen, ob es sich nicht um die schwarze Kugel handelt
         return ball.color
