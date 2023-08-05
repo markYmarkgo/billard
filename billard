@@ -119,6 +119,9 @@ def main():
 
                 # Überprüfen, ob der Reset-Button angeklickt wurde
                 mouse_pos = pygame.mouse.get_pos()
+                # Python verwendet den Backslash (\) als Zeilenumbruch-Zeichent, 
+                # um eine Anweisung über mehrere Zeilen zu verteilen. Hier wird der Backslash 
+                # verwendet, um die lange Bedingung auf mehrere Zeilen aufzuteilen.
                 if reset_button_x <= mouse_pos[0] <= reset_button_x + reset_button_width and \
                         reset_button_y <= mouse_pos[1] <= reset_button_y + reset_button_height:
                     # Überprüfen, ob die schwarze Kugel mit anderen Kugeln überlappt
