@@ -106,20 +106,8 @@ def main():
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # Queue wird benutzt
-                if queue.visible:
-                    mouseX, mouseY = pygame.mouse.get_pos()
-                    cueLength = math.sqrt((mouseX - balls[0].x) ** 2 + (mouseY - balls[0].y) ** 2)
-                    cueVel = cueLength * 0.2
-                    balls[0].velX = cueVel * math.cos(queue.angle)
-                    balls[0].velY = cueVel * math.sin(queue.angle)
-                    queue.visible = False
-
                 # Überprüfen, ob der Reset-Button angeklickt wurde
                 mousePos = pygame.mouse.get_pos()
-                # Python verwendet den Backslash (\) als Zeilenumbruch-Zeichen,
-                # um eine Anweisung über mehrere Zeilen zu verteilen. Hier wird der Backslash
-                # verwendet, um die lange Bedingung auf mehrere Zeilen aufzuteilen.
                 if resetButtonX <= mousePos[0] <= resetButtonX + resetButtonWidth and \
                         resetButtonY <= mousePos[1] <= resetButtonY + resetButtonHeight:
                     # Überprüfen, ob die schwarze Kugel mit anderen Kugeln überlappt
@@ -135,6 +123,22 @@ def main():
                         queue.visible = True
                         queue.x = balls[0].x
                         queue.y = balls[0].y
+                    else:
+                        # Hier die Bewegung der weißen Kugel unterbrechen
+                        balls[0].velX = 0
+                        balls[0].velY = 0
+                        queue.visible = True
+                        queue.x = balls[0].x
+                        queue.y = balls[0].y
+                else:
+                    # Queue wird benutzt, wenn nicht auf den RESET Button geklickt wurde
+                    if queue.visible:
+                        mouseX, mouseY = pygame.mouse.get_pos()
+                        cueLength = math.sqrt((mouseX - balls[0].x) ** 2 + (mouseY - balls[0].y) ** 2)
+                        cueVel = cueLength * 0.2
+                        balls[0].velX = cueVel * math.cos(queue.angle)
+                        balls[0].velY = cueVel * math.sin(queue.angle)
+                        queue.visible = False
 
         # Bewegung der Kugeln, wenn nicht gestoßen
         if not queue.visible:
