@@ -1,19 +1,18 @@
 import pygame
-import math
 import sys
 
 from Queue import Queue
 from Pocket import Pocket
-from funky import * #arrange_balls_at_positions, reset_game, check_pocket_collision, msgbox, gameStatus
+from funky import * #arrangeBallsAtPositions, resetGame, checkBallInPocket, msgbox, gameStatus
 
 pygame.init()
 
 # Liste zum Speichern der eingespielten Kugeln
-sunk_balls = []
+sunkBalls = []
 
 # Bildschirmabmessungen
-WINDOW_WIDTH, WINDOW_HEIGHT = 800, 600
-WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
+windowWidth, windowHeight = 800, 600
+windowSize = (windowWidth, windowHeight)
 
 # Farben definieren
 WHITE = (250, 250, 250)
@@ -28,15 +27,14 @@ VIOLET = (128, 0, 128)
 BLACK = (0, 0, 0)
 
 # Initialisierung des Fensters, pygame unterstützt da
-window = pygame.display.set_mode(WINDOW_SIZE)
+window = pygame.display.set_mode(windowSize)
 pygame.display.set_caption("Billard")
 
 # das ist die Hauptfunktion
 def main():
-    clock = pygame.time.Clock()
-
+    # *** *********************** Spiel aufbauen und Werte definieren ************************************ ***
     # definierte Kugelfarben in einer Liste speichert
-    ball_colors = [
+    ballColors = [
         WHITE, BLACK, RED,
         GREEN, BLUE, BROWN, LIGHT_BROWN,
         YELLOW, VIOLET, RED,
@@ -48,27 +46,27 @@ def main():
     # Positionen der Kugeln, habe ich händisch eingegeben,
     # Kugeln sollen in einem Dreieck angelegt werden
     positions = [
-        (WINDOW_WIDTH // 4, WINDOW_HEIGHT // 2),
-        (WINDOW_WIDTH * 3 // 4 - 50, WINDOW_HEIGHT // 2),
+        (windowWidth // 4, windowHeight // 2),
+        (windowWidth * 3 // 4 - 50, windowHeight // 2),
 
-        (WINDOW_WIDTH * 3 // 4 - 10, WINDOW_HEIGHT // 2 - 20),
-        (WINDOW_WIDTH * 3 // 4 - 10, WINDOW_HEIGHT // 2 + 25),
-        (WINDOW_WIDTH * 3 // 4 + 30, WINDOW_HEIGHT // 2),
-        (WINDOW_WIDTH * 3 // 4 + 30, WINDOW_HEIGHT // 2 + 45),
-        (WINDOW_WIDTH * 3 // 4 + 30, WINDOW_HEIGHT // 2 - 45),
-        (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 + 70),
-        (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 + 25),
-        (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 - 20),
-        (WINDOW_WIDTH * 3 // 4 + 70, WINDOW_HEIGHT // 2 - 65),
-        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 + 90),
-        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 + 45),
-        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2),
-        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 - 45),
-        (WINDOW_WIDTH * 3 // 4 + 110, WINDOW_HEIGHT // 2 - 90)
+        (windowWidth * 3 // 4 - 10, windowHeight // 2 - 20),
+        (windowWidth * 3 // 4 - 10, windowHeight // 2 + 25),
+        (windowWidth * 3 // 4 + 30, windowHeight // 2),
+        (windowWidth * 3 // 4 + 30, windowHeight // 2 + 45),
+        (windowWidth * 3 // 4 + 30, windowHeight // 2 - 45),
+        (windowWidth * 3 // 4 + 70, windowHeight // 2 + 70),
+        (windowWidth * 3 // 4 + 70, windowHeight // 2 + 25),
+        (windowWidth * 3 // 4 + 70, windowHeight // 2 - 20),
+        (windowWidth * 3 // 4 + 70, windowHeight // 2 - 65),
+        (windowWidth * 3 // 4 + 110, windowHeight // 2 + 90),
+        (windowWidth * 3 // 4 + 110, windowHeight // 2 + 45),
+        (windowWidth * 3 // 4 + 110, windowHeight // 2),
+        (windowWidth * 3 // 4 + 110, windowHeight // 2 - 45),
+        (windowWidth * 3 // 4 + 110, windowHeight // 2 - 90)
     ]
 
     # Erstellen der Kugeln und Speichern in einer Liste
-    balls = arrange_balls_at_positions(ball_colors, positions)
+    balls = arrangeBallsAtPositions(ballColors, positions)
 
     # Erstellen des Queues, die weiße Kugel ist als erstes gespeichert in
     # balls[0]. Man kann das Queue an jede andere Kugel anbringen aber
@@ -78,61 +76,62 @@ def main():
     # Taschen (Fangkörbe) erstellen
     # brauche pocket1 und pocket2 für den RESET Button
     pocket1 = Pocket(30, 30, BLACK, 30)
-    pocket2 = Pocket(WINDOW_WIDTH - 30, 30, BLACK, 30)
+    pocket2 = Pocket(windowWidth - 30, 30, BLACK, 30)
     pockets = [
         pocket1, pocket2,
-        Pocket(30, WINDOW_HEIGHT - 30, BLACK, 30),
-        Pocket(WINDOW_WIDTH - 30, WINDOW_HEIGHT - 30, BLACK, 30),
-        Pocket(WINDOW_WIDTH // 2, 30, BLACK, 30),
-        Pocket(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 30, BLACK, 30)
+        Pocket(30, windowHeight - 30, BLACK, 30),
+        Pocket(windowWidth - 30, windowHeight - 30, BLACK, 30),
+        Pocket(windowWidth // 2, 30, BLACK, 30),
+        Pocket(windowWidth // 2, windowHeight - 30, BLACK, 30)
     ]
 
     # Reset-Button erstellen
-    reset_button_x = (pocket1.x + pocket2.x) // 2 - 260
-    reset_button_y = 10
-    reset_button_width = 100
-    reset_button_height = 30
+    resetButtonX = (pocket1.x + pocket2.x) // 2 - 260
+    resetButtonY = 10
+    resetButtonWidth = 100
+    resetButtonHeight = 30
 
     queue.visible = True
 
     # Dämpfungsfaktor für das Stoppen der Kugeln. Wenn >= 1
     # werden Kugeln nicht gestopt oder sogar beschleunigt
     damping = 0.95
+    # *** *********************** ende Spielaufbau **************************************** ***
 
-    # das Spiel wird gestartet
+    # *** *********************** Spiel wird gestartet ************************************ ***
     playing = True
+    name = nameEingeben()
+    # läuft eigentlich immer;
     while playing:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                playing = False
 
+        for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Queue wird benutzt
                 if queue.visible:
-                    mouse_x, mouse_y = pygame.mouse.get_pos()
-                    cue_length = math.sqrt((mouse_x - balls[0].x) ** 2 + (mouse_y - balls[0].y) ** 2)
-                    cue_vel = cue_length * 0.2
-                    balls[0].vel_x = cue_vel * math.cos(queue.angle)
-                    balls[0].vel_y = cue_vel * math.sin(queue.angle)
+                    mouseX, mouse_y = pygame.mouse.get_pos()
+                    cueLength = math.sqrt((mouseX - balls[0].x) ** 2 + (mouse_y - balls[0].y) ** 2)
+                    cueVel = cueLength * 0.2
+                    balls[0].velX = cueVel * math.cos(queue.angle)
+                    balls[0].velY = cueVel * math.sin(queue.angle)
                     queue.visible = False
 
                 # Überprüfen, ob der Reset-Button angeklickt wurde
-                mouse_pos = pygame.mouse.get_pos()
-                # Python verwendet den Backslash (\) als Zeilenumbruch-Zeichent,
-                # um eine Anweisung über mehrere Zeilen zu verteilen. Hier wird der Backslash 
+                mousePos = pygame.mouse.get_pos()
+                # Python verwendet den Backslash (\) als Zeilenumbruch-Zeichen,
+                # um eine Anweisung über mehrere Zeilen zu verteilen. Hier wird der Backslash
                 # verwendet, um die lange Bedingung auf mehrere Zeilen aufzuteilen.
-                if reset_button_x <= mouse_pos[0] <= reset_button_x + reset_button_width and \
-                        reset_button_y <= mouse_pos[1] <= reset_button_y + reset_button_height:
+                if resetButtonX <= mousePos[0] <= resetButtonX + resetButtonWidth and \
+                        resetButtonY <= mousePos[1] <= resetButtonY + resetButtonHeight:
                     # Überprüfen, ob die schwarze Kugel mit anderen Kugeln überlappt
                     overlapping = False
                     for ball in balls[1:]:
-                        if balls[0].is_overlapping(ball):
+                        if balls[0].isOverlapping(ball):
                             overlapping = True
                             break
 
                     # Wenn die schwarze Kugel nicht mit anderen Kugeln überlappt, dann reset
                     if not overlapping:
-                        reset_game(balls[0], balls[1:], ball_colors, positions, WINDOW_WIDTH, WINDOW_HEIGHT)
+                        resetGame(balls[0], balls[1:], ballColors, positions, windowWidth, windowHeight)
                         queue.visible = True
                         queue.x = balls[0].x
                         queue.y = balls[0].y
@@ -141,35 +140,36 @@ def main():
         if not queue.visible:
             for ball in balls[1:]:
                 ball.move()
-                ball.check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
+                ball.checkWallCollision(windowWidth, windowHeight)
 
-                # Dämpfung der Geschwindigkeit auf 0, wenn die Kugel extrem langsam ist
-                # abs liefert den Absolutwert. wenn balls[0].vel_x den Wert -5 hat,
-                # dann wird abs(balls[0].vel_x) den Wert 5 liefern
-                if abs(ball.vel_x) < 0.1 and abs(ball.vel_y) < 0.1:
-                    ball.vel_x = 0
-                    ball.vel_y = 0
+                # Dämpfung der Geschwindigkeit auf 0, wenn die Kugel den
+                # Schwellwert von 0.1 erreicht hat
+                # abs liefert den Absolutwert. wenn balls[0].velX den negativen Wert -5 hat,
+                # dann wird abs(balls[0].velX) den positiven Wert 5 liefern
+                if abs(ball.velX) < 0.1 and abs(ball.velY) < 0.1:
+                    ball.velX = 0
+                    ball.velY = 0
                 else:
-                    ball.vel_x *= damping
-                    ball.vel_y *= damping
+                    ball.velX *= damping
+                    ball.velY *= damping
 
         # Bewegung der weißen Kugel
         balls[0].move()
-        balls[0].check_wall_collision(WINDOW_WIDTH, WINDOW_HEIGHT)
+        balls[0].checkWallCollision(windowWidth, windowHeight)
 
         # Dämpfung der Geschwindigkeit der weißen Kugel, wenn sie nahezu gestoppt ist
-        # abs liefert den Absolutwert. wenn balls[0].vel_x den Wert -5 hat,
-        # dann wird abs(balls[0].vel_x) den Wert 5 liefern
-        if abs(balls[0].vel_x) < 0.1 and abs(balls[0].vel_y) < 0.1:
-            balls[0].vel_x = 0
-            balls[0].vel_y = 0
+        # abs liefert den Absolutwert. wenn balls[0].velX den Wert -5 hat,
+        # dann wird abs(balls[0].velX) den Wert 5 liefern
+        if abs(balls[0].velX) < 0.1 and abs(balls[0].velY) < 0.1:
+            balls[0].velX = 0
+            balls[0].velY = 0
             if not queue.visible:
                 queue.visible = True
                 queue.x = balls[0].x
                 queue.y = balls[0].y
         else:
-            balls[0].vel_x *= damping
-            balls[0].vel_y *= damping
+            balls[0].velX *= damping
+            balls[0].velY *= damping
 
         # Kollisionserkennung zwischen den Kugeln
         # Solange Kugeln rollen wird das Queue nicht angezeigt
@@ -184,36 +184,36 @@ def main():
                     distance = math.sqrt(dx ** 2 + dy ** 2)
 
                     if distance <= ball1.radius + ball2.radius:
-                        ball1.resolve_collision(ball2)
+                        ball1.resolveCollision(ball2)
 
         # Überprüfung, ob Kugeln in Taschen gelocht wurden
         for ball in balls:
-            pocket_collision = check_pocket_collision(ball, pockets)
+            pocket_collision = checkBallInPocket(ball, pockets)
             if ball.visible and pocket_collision:
                 #1. if-statement, wenn weiße Kugel eingespielt wurde
                 if ball == balls[0]:
-                    setWhiteBall(WINDOW_WIDTH, WINDOW_HEIGHT, ball, queue)
+                    setWhiteBall(windowWidth, windowHeight, ball, queue)
                 else:
                     # else kümmert sich um alle anderen Kugeln, die eingespielt wurden
                     # prüfen welche Kugeln eingespiet wurden;
-                    # Variable color_name wird benötigt um die Kugelfarbe bei der Ausgabe anzugeben
-                    color_name = setBallcolor(ball, ball_colors)
+                    # Variable colorName wird benötigt um die Kugelfarbe bei der Ausgabe anzugeben
+                    colorName = setBallcolor(ball, ballColors)
 
                     # Die eingespielten Kugeln werden in eine Liste eingetragen
-                    sunk_balls.append(gameStatus(ball))
+                    sunkBalls.append(gameStatus(ball))
 
                     # schwarze Kugel soll als letztes eingespielt werden
                     if ball.color == BLACK:
-                        if (len(sunk_balls) < 16):
+                        if (len(sunkBalls) < 16):
                             msgbox("Leider verloren!", "Der schwarze Kugel wurde versenkt.\nEs geht aber weiter.")
                             #schwarze Kugel wieder ins Spiel bringen
-                            setBlackBall(WINDOW_WIDTH, WINDOW_HEIGHT, ball)
+                            setBlackBall(windowWidth, windowHeight, ball)
                         else:
                             msgbox("Sie haben gewonnen!", "Herzlichen  Glückwunsch.\nSie haben gewonnen.")
                             #Programm verlassen
                             sys.exit()
                     else:
-                        msgbox("Gelocht", f"{color_name.capitalize()} Kugel gelocht!")
+                        msgbox("Gelocht", f"Lieber {name} die {colorName.capitalize()} Kugel wurde eingespielt!")
                         # eingespielte Kugel unsichtbar machen
                         ball.visible = False
 
@@ -233,16 +233,14 @@ def main():
         queue.drawQue(window)
 
         # Reset-Button zeichnen
-        pygame.draw.rect(window, RED, (reset_button_x, reset_button_y, reset_button_width, reset_button_height))
+        pygame.draw.rect(window, RED, (resetButtonX, resetButtonY, resetButtonWidth, resetButtonHeight))
         font = pygame.font.SysFont(None, 25)
         text = font.render("RESET", True, WHITE)
         # zeichnet den Text im RESET Button
-        window.blit(text, (reset_button_x + 25, reset_button_y + 8))
+        window.blit(text, (resetButtonX + 25, resetButtonY + 8))
 
         pygame.display.update()
-        clock.tick(60)
 
-    pygame.quit()
 
 
 # Der Block wird nur ausgeführt, wenn das Skript direkt ausgeführt wird.
