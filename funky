@@ -1,5 +1,6 @@
 import math
 import ctypes
+from tkinter import simpledialog
 from Kugel import Kugel
 
 # Import um die Farbkonstanten einzubeziehen
@@ -8,54 +9,64 @@ from billard import RED, GREEN, BLUE, BROWN, LIGHT_BROWN, YELLOW, VIOLET, BLACK
 
 # Spiel neu starten, die farbigen Kugeln sollen in einem
 # Dreieck angeordnet werden
-def reset_game(white_ball, colored_balls, ball_colors, positions, WINDOW_WIDTH, WINDOW_HEIGHT):
+def resetGame(whiteBall, coloredBalls, ballColors, positions, windowWidth, windowHeight):
     # Entfernen der weißen Kugel aus der Liste der farbigen Kugeln, falls sie vorhanden ist
-    if white_ball in colored_balls:
-        colored_balls.remove(white_ball)
+    if whiteBall in coloredBalls:
+        coloredBalls.remove(whiteBall)
 
-    white_ball.set_position(positions[0][0], positions[0][1])
-    white_ball.vel_x = 0
-    white_ball.vel_y = 0
-    white_ball.visible = True
+    whiteBall.setPosition(positions[0][0], positions[0][1])
+    whiteBall.vel_x = 0
+    whiteBall.vel_y = 0
+    whiteBall.visible = True
 
     # Anordnen der farbigen Kugeln in einer Dreiecksformation
-    for i, ball in enumerate(colored_balls):
-        ball.set_position(positions[i + 1][0], positions[i + 1][1])
+    for i, ball in enumerate(coloredBalls):
+        ball.setPosition(positions[i + 1][0], positions[i + 1][1])
         ball.vel_x = 0
         ball.vel_y = 0
         ball.visible = True
 
-# prüft ob Kugel eingespielt wurde
-def check_pocket_collision(ball, pockets):
+# prüft ob Kugel in einen Korb eingespielt wurde
+def checkBallInPocket(ball, pockets):
     for pocket_obj in pockets:
         dx = ball.x - pocket_obj.x
         dy = ball.y - pocket_obj.y
+        #mittels Pytagoras den Abstand der Kugeln zur Tasche ermitteln
         distance = math.sqrt(dx ** 2 + dy ** 2)
 
+        # Ist die Distanz <= dem Pocket-Radius, dann wird True zurück gegeben
         if distance <= pocket_obj.radius:
             return True
 
     return False
 
 # Erstellen der Kugeln
-def arrange_balls_at_positions(ball_colors, positions):
-    colored_balls = []
+def arrangeBallsAtPositions(ballColors, positions):
+    coloredBalls = []
     """
         Wenn man auf das zip verzichtet und stattdessen die Schleife wie folgt schreibt:
         for i in range(len(positions)):
             pos = positions[i]
-            color = ball_colors[i]
-        würde das immer noch funktionieren und das gleiche Ergebnis erzielen wie mit der Verwendung von zip.
+            color = ballColors[i]
+        würde das immer noch funktionieren und das gleiche Ergebnis erzielen wie mit der 
+        Verwendung von zip.
     """
-    for pos, color in zip(positions, ball_colors):
+    for pos, color in zip(positions, ballColors):
         # Ignoriere die weiße Kugel (Farbe Weiß) beim Neuarrangieren
         if color != (255, 255, 255):  # RGB-Wert für Weiß
-            colored_balls.append(Kugel(pos[0], pos[1], color))
-    return colored_balls
+            coloredBalls.append(Kugel(pos[0], pos[1], color))
+    return coloredBalls
 
 # für Text Ausgaben, es wird eine msgbox erzeugt
 def msgbox(title, text):
     return ctypes.windll.user32.MessageBoxW(0, text, title, 1)
+
+def nameEingeben():
+    name = simpledialog.askstring("Namen eingeben", "Bitte geben Sie einen Namen ein:")
+    if name is None:
+        return "kein Name"
+    else:
+        return name
 
 # wird für das Speichern der eingespielten Kugeln benötigt
 # die schwarze Kugel wird dabei nicht registriert
@@ -64,29 +75,29 @@ def gameStatus(ball):
         return ball.color
 
 # setzt die schwarze Kugel in Postion
-def setBlackBall(WINDOW_WIDTH, WINDOW_HEIGHT, ball):
+def setBlackBall(windowWidth, windowHeight, ball):
     ball.visible = False
-    ball.x = WINDOW_WIDTH * 3 // 4 + 110
-    ball.y = WINDOW_HEIGHT // 2
+    ball.x = windowWidth * 3 // 4 + 110
+    ball.y = windowHeight // 2
     ball.vel_x = 0
     ball.vel_y = 0
     ball.visible = True
 
 # setzt die weiße Kugel in Postion
-def setWhiteBall(WINDOW_WIDTH, WINDOW_HEIGHT, ball, queue):
+def setWhiteBall(windowWidth, windowHeight, ball, queue):
     ball.vel_x = 0
     ball.vel_y = 0
-    ball.x = WINDOW_WIDTH // 4
-    ball.y = WINDOW_HEIGHT // 2
+    ball.x = windowWidth // 4
+    ball.y = windowHeight // 2
     if not queue.visible:
         queue.visible = True
         queue.x = ball.x
         queue.y = ball.y
 
 # setzt Kugelfarbe
-def setBallcolor(ball, ball_colors):
+def setBallcolor(ball, ballColors):
     color_name = "standard"
-    for color in ball_colors:
+    for color in ballColors:
         if ball.color == color:  # Compare the color tuples directly
             if color == RED:
                 color_name = "rote"
