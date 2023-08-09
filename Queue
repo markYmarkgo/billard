@@ -22,7 +22,7 @@ class Queue:
     # zeichnet das Queue
     def drawQue(self, window):
         if self.visible:
-            # mit 8 wird die Quebreite festgelegt
+            # mit 5 wird die Quebreite festgelegt
             pygame.draw.line(
                 window, (255, 255, 255),
                 (self.x, self.y),
