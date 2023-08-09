@@ -106,6 +106,15 @@ def main():
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
+                # Wenn das Queue nicht am Ball befestigt ist und sichtbar ist
+                if not queue.stuck_to_ball and queue.visible:
+                    mouseX, mouseY = pygame.mouse.get_pos()
+                    cueLength = math.sqrt((mouseX - balls[0].x) ** 2 + (mouseY - balls[0].y) ** 2)
+                    cueVel = cueLength * 0.2
+                    balls[0].velX = cueVel * math.cos(queue.angle)
+                    balls[0].velY = cueVel * math.sin(queue.angle)
+                    queue.stuck_to_ball = False  # Hier das Queue vom Ball lösen
+                    queue.visible = False  # Und unsichtbar machen
                 # Überprüfen, ob der Reset-Button angeklickt wurde
                 mousePos = pygame.mouse.get_pos()
                 if resetButtonX <= mousePos[0] <= resetButtonX + resetButtonWidth and \
