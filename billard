@@ -108,8 +108,8 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Queue wird benutzt
                 if queue.visible:
-                    mouseX, mouse_y = pygame.mouse.get_pos()
-                    cueLength = math.sqrt((mouseX - balls[0].x) ** 2 + (mouse_y - balls[0].y) ** 2)
+                    mouseX, mouseY = pygame.mouse.get_pos()
+                    cueLength = math.sqrt((mouseX - balls[0].x) ** 2 + (mouseY - balls[0].y) ** 2)
                     cueVel = cueLength * 0.2
                     balls[0].velX = cueVel * math.cos(queue.angle)
                     balls[0].velY = cueVel * math.sin(queue.angle)
