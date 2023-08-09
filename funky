@@ -62,7 +62,7 @@ def msgbox(title, text):
     return ctypes.windll.user32.MessageBoxW(0, text, title, 1)
 
 def nameEingeben():
-    name = simpledialog.askstring("Namen eingeben", "Bitte geben Sie einen Namen ein:")
+    name = simpledialog.askstring("Namen eingeben", "Bitte geben Sie Ihren Namen ein:")
     if name is None:
         return "kein Name"
     else:
