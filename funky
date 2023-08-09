@@ -1,5 +1,7 @@
 import math
 import ctypes
+import pygame
+
 from tkinter import simpledialog
 from Kugel import Kugel
 
@@ -15,16 +17,21 @@ def resetGame(whiteBall, coloredBalls, ballColors, positions, windowWidth, windo
         coloredBalls.remove(whiteBall)
 
     whiteBall.setPosition(positions[0][0], positions[0][1])
-    whiteBall.vel_x = 0
+    whiteBall.vel_x = 0  # Setze die Geschwindigkeit auf Null
     whiteBall.vel_y = 0
     whiteBall.visible = True
+
+    # Setze die Geschwindigkeit aller farbigen Kugeln auf Null
+    for ball in coloredBalls:
+        ball.vel_x = 0
+        ball.vel_y = 0
+        ball.visible = True
 
     # Anordnen der farbigen Kugeln in einer Dreiecksformation
     for i, ball in enumerate(coloredBalls):
         ball.setPosition(positions[i + 1][0], positions[i + 1][1])
-        ball.vel_x = 0
-        ball.vel_y = 0
         ball.visible = True
+
 
 # prüft ob Kugel in einen Korb eingespielt wurde
 def checkBallInPocket(ball, pockets):
@@ -118,3 +125,5 @@ def setBallcolor(ball, ballColors):
             break
 
     return color_name
+
+
