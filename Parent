@@ -1,0 +1,36 @@
+import pygame
+import math
+
+class Parent:
+    #ensprechend der Kugel werden die Werte im Konstruktor gesetzt
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    # Kugel wird gezeichnet
+    def drawBall(self, window):
+        if self.visible:
+            pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)
+
+    # Pocket wird gezeichnet
+    def drawPocket(self, window):
+        pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)
+
+    # zeichnet das Queue
+    def drawQue(self, window):
+        if self.stuck_to_ball:
+            # Zeichne das Queue am Ball
+            pygame.draw.line(window, (255, 255, 0), (self.x, self.y), (balls[0].x, balls[0].y), 3)
+        elif self.visible:
+            # Zeichne das Queue normal
+            end_x = self.x + self.length * math.cos(self.angle)
+            end_y = self.y + self.length * math.sin(self.angle)
+            pygame.draw.line(window, (255, 255, 0), (self.x, self.y), (end_x, end_y), 3)
+
+        if self.visible:
+            # mit 5 wird die Quebreite festgelegt
+            pygame.draw.line(
+                window, (255, 255, 255),
+                (self.x, self.y),
+                (self.x + self.length * math.cos(self.angle),
+                self.y + self.length * math.sin(self.angle)), 5)
