@@ -1,15 +1,13 @@
-import pygame
+from Parent import Parent
 
 # Die Taschen in denen die Kugel eingespielt werden kann
 # wird mit dieser Klasse erzeugt
-class Pocket:
+class Pocket(Parent):
     # x, y, Farbe und Radius des Pockets werden definiert
     def __init__(self, x, y, color, radius):
-        self.x = x
-        self.y = y
+        super().__init__(x, y)
         self.color = color
         self.radius = radius
 
-    # Pocket wird gezeichnet
-    def drawPocket(self, window):
-        pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)
+
+
