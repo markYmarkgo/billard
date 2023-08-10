@@ -1,4 +1,3 @@
-import pygame
 import sys
 
 from Queue import Queue
@@ -74,7 +73,7 @@ def main():
     queue = Queue(balls[0].x, balls[0].y)
 
     # Taschen (Fangkörbe) erstellen
-    # brauche pocket1 und pocket2 für den RESET Button
+    # pocket1 und pocket2 wird für den RESET Button gebraucht
     pocket1 = Pocket(30, 30, BLACK, 30)
     pocket2 = Pocket(windowWidth - 30, 30, BLACK, 30)
     pockets = [
