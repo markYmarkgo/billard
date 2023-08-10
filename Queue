@@ -1,14 +1,17 @@
 import pygame
 import math
 
+from Parent import Parent
+
 # Das Queue, das an der weißen Kugel angebracht
 # wird wird mit dieser Klasse erzeugt
-class Queue:
+class Queue(Parent):
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        super().__init__(x, y)
         self.length = 100  # Anfangslänge des Queues
+        self.stuck_to_ball = False
         self.visible = True
+        self.length = 100
 
     # erstellt die Daten für das Queue entsprechend der Mausposition zusammen
     def createQueue(self):
@@ -19,13 +22,5 @@ class Queue:
             self.angle = math.atan2(dy, dx) # Winkel
             self.length = min(math.sqrt(dx**2 + dy**2), 300)  # Maximale Länge des Queues auf 300 begrenzen
 
-    # zeichnet das Queue
-    def drawQue(self, window):
-        if self.visible:
-            # mit 5 wird die Quebreite festgelegt
-            pygame.draw.line(
-                window, (255, 255, 255),
-                (self.x, self.y),
-                (self.x + self.length * math.cos(self.angle),
-                self.y + self.length * math.sin(self.angle)), 5)
+
 
